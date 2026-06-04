@@ -1,1 +1,1 @@
-# Digital-Wellbeing-Desktop---Web-Extension
+# Digital-Wellbeing-Desktop---Browser-Extension
