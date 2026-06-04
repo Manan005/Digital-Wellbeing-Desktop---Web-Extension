@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.dw-notch-container {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  pointer-events: none;
+  animation: dw-slide-down 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.dw-notch {
+  background: #004d40;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  display: flex;
+  items-center: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 180px;
+}
+
+.dw-notch-icon {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 2px;
+}
+
+.dw-notch-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+}
+
+.dw-notch-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.dw-blocker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.dw-blocker-dialog {
+  background: #2d2d2d;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 32px;
+  padding: 40px 32px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.dw-blocker-icon {
+  color: #c1d3ff;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.dw-blocker-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.dw-blocker-title {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  font-family: 'Google Sans', 'Inter', sans-serif;
+}
+
+.dw-blocker-message {
+  color: #e2e8f0;
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  font-family: 'Inter', sans-serif;
+}
+
+.dw-blocker-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dw-btn-text {
+  color: #c1d3ff;
+  font-weight: 600;
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.dw-btn-text:hover {
+  background: rgba(193, 211, 255, 0.1);
+}
+
+.dw-btn-primary {
+  color: #c1d3ff;
+  font-weight: 600;
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.dw-btn-primary:hover {
+  background: rgba(193, 211, 255, 0.1);
+}
+
+@keyframes dw-slide-down {
+  0% { transform: translate(-50%, -100%); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Chrome extension packaging artifacts
+*.crx
+*.pem
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Design reference images (not part of source code)
+images/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-generated files
+Desktop.ini
+ehthumbs.db
+
+# TypeScript cache
+*.tsbuildinfo
