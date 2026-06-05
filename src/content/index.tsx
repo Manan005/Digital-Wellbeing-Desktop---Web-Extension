@@ -26,6 +26,18 @@ const ContentApp: React.FC = () => {
     return () => chrome.runtime.onMessage.removeListener(listener);
   }, []);
 
+  // Send periodic heartbeat when user is actively viewing/focusing the page
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.hasFocus() && document.visibilityState === 'visible') {
+        chrome.runtime.sendMessage({ type: 'HEARTBEAT', domain: window.location.hostname }).catch(() => {
+          // Suppress errors during tab shutdown or extension reload
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="digital-wellbeing-wrapper">
       {showNotch && (
