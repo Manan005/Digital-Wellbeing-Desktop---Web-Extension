@@ -1,0 +1,200 @@
+{
+  "communities": {
+    "0": [
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_allowsyntheticdefaultimports",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_forceconsistentcasinginfilenames",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_compileroptions_types",
+      "tsconfig_compileroptions_usedefineforclassfields",
+      "tsconfig_include",
+      "tsconfig_references"
+    ],
+    "1": [
+      "manifest",
+      "manifest_action",
+      "manifest_action_default_popup",
+      "manifest_background",
+      "manifest_background_service_worker",
+      "manifest_background_type",
+      "manifest_content_scripts",
+      "manifest_description",
+      "manifest_manifest_version",
+      "manifest_name",
+      "manifest_permissions",
+      "manifest_version",
+      "vite_config"
+    ],
+    "2": [
+      "package_devdependencies",
+      "package_devdependencies_autoprefixer",
+      "package_devdependencies_crxjs_vite_plugin",
+      "package_devdependencies_postcss",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_types_chrome",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript",
+      "package_devdependencies_vite",
+      "package_devdependencies_vitejs_plugin_react"
+    ],
+    "3": [
+      "src_activitydetails",
+      "src_activitydetails_activitydetails",
+      "src_activitydetails_domainmetrics",
+      "src_activitydetails_globalsettings",
+      "src_activitydetails_sitesettings",
+      "src_app",
+      "src_app_app",
+      "src_main",
+      "utils_time",
+      "utils_time_formatseconds",
+      "utils_time_getlast7days"
+    ],
+    "4": [
+      "src_background",
+      "src_background_domainmetrics",
+      "src_background_getdomain",
+      "src_background_getlocaldatestr",
+      "src_background_incrementtimesopened",
+      "src_background_incrementtimespent",
+      "src_background_initialize",
+      "src_background_migrateoldstorageschema",
+      "src_background_sitesettings",
+      "src_background_updateactivetab"
+    ],
+    "5": [
+      "package",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_preview",
+      "package_type",
+      "package_version"
+    ],
+    "6": [
+      "tsconfig_node",
+      "tsconfig_node_compileroptions",
+      "tsconfig_node_compileroptions_allowsyntheticdefaultimports",
+      "tsconfig_node_compileroptions_composite",
+      "tsconfig_node_compileroptions_module",
+      "tsconfig_node_compileroptions_moduleresolution",
+      "tsconfig_node_include"
+    ],
+    "7": [
+      "package_dependencies",
+      "package_dependencies_clsx",
+      "package_dependencies_lucide_react",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_tailwind_merge"
+    ],
+    "8": [
+      "content_index",
+      "content_index_contentapp",
+      "content_index_root"
+    ],
+    "9": [
+      "postcss_config"
+    ],
+    "10": [
+      "tailwind_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.1,
+    "1": 0.15384615384615385,
+    "2": 0.18181818181818182,
+    "3": 0.2545454545454545,
+    "4": 0.35555555555555557,
+    "5": 0.2222222222222222,
+    "6": 0.2857142857142857,
+    "7": 0.3333333333333333,
+    "8": 0.6666666666666666,
+    "9": 1.0,
+    "10": 1.0
+  },
+  "gods": [
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 17
+    },
+    {
+      "id": "tsconfig_node_compileroptions",
+      "label": "compilerOptions",
+      "degree": 5
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 4
+    },
+    {
+      "id": "src_background_getlocaldatestr",
+      "label": "getLocalDateStr()",
+      "degree": 4
+    },
+    {
+      "id": "manifest_background",
+      "label": "background",
+      "degree": 3
+    },
+    {
+      "id": "src_background_getdomain",
+      "label": "getDomain()",
+      "degree": 3
+    },
+    {
+      "id": "src_background_updateactivetab",
+      "label": "updateActiveTab()",
+      "degree": 3
+    },
+    {
+      "id": "src_background_incrementtimespent",
+      "label": "incrementTimeSpent()",
+      "degree": 3
+    },
+    {
+      "id": "src_background_migrateoldstorageschema",
+      "label": "migrateOldStorageSchema()",
+      "degree": 3
+    },
+    {
+      "id": "src_background_initialize",
+      "label": "initialize()",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "ActivityDetails()",
+      "target": "formatSeconds()",
+      "source_files": [
+        "src/ActivityDetails.tsx",
+        "src/utils/time.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
