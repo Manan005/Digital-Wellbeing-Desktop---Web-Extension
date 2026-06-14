@@ -19,6 +19,74 @@ interface GlobalSettings {
   periodicAlerts: boolean;
 }
 
+// Simple mock chrome object for local browser development
+const listeners = new Set<(changes: any) => void>();
+if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
+  const mockStorage: Record<string, any> = {
+    settings: { dailyGoal: 150, periodicAlerts: true },
+  };
+  
+  // Fill in mock data for the last 7 days to make visual testing gorgeous
+  const last7DaysList = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    last7DaysList.push(dateStr);
+  }
+  
+  const sampleDomains = ['youtube.com', 'google.com', 'github.com', 'stackoverflow.com', 'facebook.com'];
+  last7DaysList.forEach((dateStr, idx) => {
+    mockStorage[dateStr] = {};
+    sampleDomains.forEach((domain, domIdx) => {
+      const seconds = Math.floor((Math.sin(idx + domIdx) + 1) * 3600 * 0.8);
+      if (seconds > 0) {
+        mockStorage[dateStr][domain] = {
+          timeSpentSeconds: seconds,
+          timesOpened: Math.floor(seconds / 200) + 1
+        };
+      }
+    });
+  });
+
+  (window as any).chrome = {
+    storage: {
+      local: {
+        get: async (keys: any) => {
+          if (keys === null) return mockStorage;
+          if (typeof keys === 'string') return { [keys]: mockStorage[keys] };
+          if (Array.isArray(keys)) {
+            const res: Record<string, any> = {};
+            keys.forEach(k => {
+              res[k] = mockStorage[k];
+            });
+            return res;
+          }
+          return {};
+        },
+        set: async (items: Record<string, any>) => {
+          Object.assign(mockStorage, items);
+          listeners.forEach(cb => cb(items));
+        }
+      },
+      onChanged: {
+        addListener: (cb: any) => {
+          listeners.add(cb);
+        },
+        removeListener: (cb: any) => {
+          listeners.delete(cb);
+        }
+      }
+    },
+    runtime: {
+      sendMessage: (msg: any) => {
+        console.log('Mock sendMessage:', msg);
+      },
+      getURL: (path: string) => path
+    }
+  };
+}
+
 const ActivityDetails: React.FC = () => {
   const [width, setWidth] = useState(window.innerWidth);
   const [allStorage, setAllStorage] = useState<Record<string, any>>({});
@@ -169,7 +237,7 @@ const ActivityDetails: React.FC = () => {
   if (width < 600) {
     const todaySites = selectedDateUsage.sites.slice(0, 3);
     return (
-      <div className="w-[350px] p-4 bg-gray-950 text-slate-100 font-sans min-h-[480px] flex flex-col justify-between">
+      <div className="w-full p-4 bg-gray-950 text-slate-100 font-sans min-h-[480px] flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between mb-5">
             <h1 className="text-xl font-bold flex items-center gap-2 text-white">
@@ -219,7 +287,7 @@ const ActivityDetails: React.FC = () => {
   // ----------------------------------------------------
   return (
     <div className="flex-1 p-8 md:p-12 bg-[#f6f8ff] text-slate-900 min-h-screen font-sans">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full">
         <header className="flex flex-col items-center mb-10 text-center">
           <h1 className="text-3xl font-bold text-slate-800 tracking-tight mb-4">App activity details</h1>
           
@@ -253,7 +321,7 @@ const ActivityDetails: React.FC = () => {
                 >
                   <div
                     className={clsx(
-                      "w-full max-w-[44px] transition-all rounded-t-lg relative hover:opacity-90 shadow-sm",
+                      "w-full max-w-[56px] transition-all rounded-t-lg relative hover:opacity-90 shadow-sm",
                       isSelected ? "bg-indigo-600" : "bg-indigo-100"
                     )}
                     style={{
