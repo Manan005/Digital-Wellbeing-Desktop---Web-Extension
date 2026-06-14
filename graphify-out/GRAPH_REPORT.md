@@ -1,15 +1,16 @@
-# Graph Report - .  (2026-06-12)
+# Graph Report - Chrome Extension Digital wellbeing  (2026-06-14)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 14 files · ~3,578 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 92 nodes · 94 edges · 11 communities (10 shown, 1 thin omitted)
+- 93 nodes · 95 edges · 11 communities (10 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f5c8605b`
+- Built from commit: `2b714832`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -58,8 +59,8 @@ Cohesion: 0.18
 Nodes (11): devDependencies, autoprefixer, @crxjs/vite-plugin, postcss, tailwindcss, @types/chrome, @types/react, @types/react-dom (+3 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.25
-Nodes (7): ActivityDetails(), DomainMetrics, GlobalSettings, SiteSettings, App(), formatSeconds(), getLast7Days()
+Cohesion: 0.23
+Nodes (8): ActivityDetails(), DomainMetrics, GlobalSettings, listeners, SiteSettings, App(), formatSeconds(), getLast7Days()
 
 ### Community 4 - "Community 4"
 Cohesion: 0.36
@@ -78,7 +79,7 @@ Cohesion: 0.33
 Nodes (6): dependencies, clsx, lucide-react, react, react-dom, tailwind-merge
 
 ## Knowledge Gaps
-- **60 isolated node(s):** `manifest_version`, `name`, `version`, `description`, `permissions` (+55 more)
+- **61 isolated node(s):** `manifest_version`, `name`, `version`, `description`, `permissions` (+56 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -86,10 +87,10 @@ Nodes (6): dependencies, clsx, lucide-react, react, react-dom, tailwind-merge
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `devDependencies` connect `Community 2` to `Community 5`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `Community 7` to `Community 5`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **What connects `manifest_version`, `name`, `version` to the rest of the system?**
-  _60 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _61 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._

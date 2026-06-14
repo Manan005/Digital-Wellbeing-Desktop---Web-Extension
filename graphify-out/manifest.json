@@ -1,6 +1,6 @@
 {
   ".gemini/settings.json": {
-    "mtime": 1781257981.7425654,
+    "mtime": 1781436490.424424,
     "ast_hash": "ddc6069a85a1acc06096e06bcd8087ac",
     "semantic_hash": "ddc6069a85a1acc06096e06bcd8087ac"
   },
@@ -20,9 +20,9 @@
     "semantic_hash": "5b84f4567208c7c747079c0477373231"
   },
   "src/ActivityDetails.tsx": {
-    "mtime": 1780737283.1126866,
-    "ast_hash": "6fd764353fcb99f45bb0d5dcefe8737d",
-    "semantic_hash": "6fd764353fcb99f45bb0d5dcefe8737d"
+    "mtime": 1781458316.2054002,
+    "ast_hash": "10ae2d4d217923df72f512f3ddf5da27",
+    "semantic_hash": ""
   },
   "src/App.tsx": {
     "mtime": 1780737283.1132145,
