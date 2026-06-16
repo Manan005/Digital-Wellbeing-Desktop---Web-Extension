@@ -1,6 +1,6 @@
-# Digital Wellbeing Tracker — Chrome Extension
+# Digital Wellbeing Tracker — Browser Extension
 
-A beautiful, responsive, and feature-rich Chrome Extension inspired by Android's Digital Wellbeing. It helps you monitor your daily screen time, manage website usage, and stay productive through custom daily limits and periodic alerts.
+A beautiful, responsive, and feature-rich browser extension inspired by Android's Digital Wellbeing. It helps you monitor your daily screen time, manage website usage, and stay productive through custom daily limits and periodic alerts.
 
 ---
 
@@ -22,42 +22,55 @@ A beautiful, responsive, and feature-rich Chrome Extension inspired by Android's
 * **Frontend:** React 18, TypeScript, Tailwind CSS 3
 * **Icons:** Lucide React
 * **Build System:** Vite 5, PostCSS, Autoprefixer
-* **Extension Platform:** Chrome Extension Manifest V3, Background Service Workers, and injected Content Scripts
+* **Extension Platform:** Web Extension Manifest V3 (compatible with Chrome, Edge, Brave, Opera, etc.), Background Service Workers, and injected Content Scripts
 
 ---
 
-## 📦 Getting Started
+## 📦 Getting Started & Local Installation
 
-### Prerequisites
+Follow these steps to set up the project locally and add the extension to your browser.
 
-Ensure you have [Node.js](https://nodejs.org/) installed on your computer.
+### 1. Build the Extension Locally
 
-### Installation
-
-1. **Clone the repository:**
+1. **Prerequisites:** Ensure you have [Node.js](https://nodejs.org/) (v16 or higher recommended) installed.
+2. **Clone the repository:**
    ```bash
    git clone https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension.git
    cd Digital-Wellbeing-Desktop---Web-Extension
    ```
-
-2. **Install dependencies:**
+3. **Install packages:**
    ```bash
    npm install
    ```
-
-3. **Build the extension:**
+4. **Build the extension:**
    ```bash
    npm run build
    ```
-   This generates a production-ready extension package in the `dist/` directory.
+   *Note: This command compiles TypeScript/JSX and uses Vite to bundle the files into a new `dist/` directory at the project root.*
 
-### Loading the Extension into Google Chrome
+---
 
-1. Open Google Chrome and go to `chrome://extensions/`.
-2. Turn on **Developer mode** using the toggle switch in the top-right corner.
-3. Click the **Load unpacked** button in the top-left corner.
-4. Select the built `dist` folder inside your project directory.
-5. Pin the **Digital Wellbeing Tracker** to your extensions toolbar for easy access!
+### 2. Load the Extension into Your Browser
+
+Once the `dist/` folder is generated, load it into your preferred web browser:
+
+1. Open any Chromium-based web browser (such as **Google Chrome, Microsoft Edge, Brave, Opera, or Vivaldi**).
+2. Go to the extensions management screen by typing the appropriate URL in the address bar:
+   * **Chrome / Brave:** `chrome://extensions`
+   * **Edge:** `edge://extensions`
+   * **Opera:** `opera://extensions`
+3. Turn on **Developer mode** (typically a toggle switch in the top-right corner or sidebar).
+4. Click the **Load unpacked** button (sometimes called **Load unpacked extension**).
+5. Select the **`dist`** folder in your project directory.
+6. Pin the **Digital Wellbeing Tracker** to your toolbar for quick access (via the extensions puzzle piece icon in your toolbar).
+
+---
+
+### 3. Applying Code Updates
+
+If you modify any source files (in `src/`):
+1. Run `npm run build` again to recompile the changes.
+2. Go back to your browser's extensions page and click the **Reload icon** (circular arrow button) on the **Digital Wellbeing Tracker** extension card.
 
 ---
 
