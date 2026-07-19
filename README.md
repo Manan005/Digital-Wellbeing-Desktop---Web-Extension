@@ -17,6 +17,16 @@ A beautiful, responsive, and feature-rich browser extension inspired by Android'
 
 ---
 
+## 🛠️ Changes in progress
+
+This extension utilizes Chrome's native **Prompt API** (stable for extensions as of Chrome 138) to act as a local Retrieval-Augmented Generation (RAG) agent. 
+
+* **Zero Cloud Costs & Privacy First:** All AI inference runs entirely on your device using the Gemini Nano model. Your sensitive screen-time data and browsing habits never leave your computer.
+* **The RAG Pipeline:** The extension retrieves your weekly usage JSON from `chrome.storage.local` and feeds it directly into a local session via `LanguageModel.create()`.
+* **Actionable Insights:** The AI acts as a personalized productivity coach. It analyzes your context to identify trends and provides custom insights, such as: *"You spent an extra 45 minutes on LeetCode solving problems in C and Java today, but your scrolling time on social media also spiked. Let's lock in for tomorrow!"*
+
+---
+
 ## 🛠️ Built With
 
 * **Frontend:** React 18, TypeScript, Tailwind CSS 3
