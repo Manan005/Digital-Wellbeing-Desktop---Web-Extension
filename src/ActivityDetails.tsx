@@ -1,7 +1,220 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { LayoutDashboard, ExternalLink, Timer, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { LayoutDashboard, ExternalLink, Timer, AlertCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { formatSeconds, getLast7Days } from './utils/time';
+
+// ─── Timer Picker Modal ────────────────────────────────────────────────────────
+
+interface TimerPickerModalProps {
+  domain: string | null; // null = global daily goal
+  initialMinutes: number;
+  onConfirm: (totalMinutes: number) => void;
+  onCancel: () => void;
+  onDelete?: () => void; // only present when a limit already exists
+}
+
+/** A single scrollable drum-roll column (hours or minutes) */
+const DrumColumn: React.FC<{
+  items: number[];
+  selected: number;
+  onSelect: (v: number) => void;
+  label: string;
+}> = ({ items, selected, onSelect, label }) => {
+  const ITEM_H = 48; // px per row
+  const VISIBLE = 5;  // visible rows; centre one is selected
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startY = useRef(0);
+  const startScrollTop = useRef(0);
+
+  // Sync scroll position when `selected` changes externally
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const idx = items.indexOf(selected);
+    if (idx === -1) return;
+    el.scrollTop = idx * ITEM_H;
+  }, [selected, items]);
+
+  const handleScroll = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollTop / ITEM_H);
+    const clamped = Math.max(0, Math.min(items.length - 1, idx));
+    if (items[clamped] !== selected) {
+      onSelect(items[clamped]);
+    }
+  }, [items, selected, onSelect]);
+
+  // Mouse / touch drag support for desktop
+  const onMouseDown = (e: React.MouseEvent) => {
+    const el = containerRef.current;
+    if (!el) return;
+    isDragging.current = true;
+    startY.current = e.clientY;
+    startScrollTop.current = el.scrollTop;
+    e.preventDefault();
+  };
+  const onMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+    const dy = startY.current - e.clientY;
+    containerRef.current.scrollTop = startScrollTop.current + dy;
+  }, []);
+  const onMouseUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [onMouseMove, onMouseUp]);
+
+  return (
+    <div className="flex flex-col items-center select-none" style={{ width: 100 }}>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        onMouseDown={onMouseDown}
+        className="overflow-y-scroll relative cursor-grab active:cursor-grabbing"
+        style={{
+          height: ITEM_H * VISIBLE,
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+          scrollSnapType: 'y mandatory',
+        }}
+      >
+        {/* top padding phantom rows */}
+        {Array.from({ length: Math.floor(VISIBLE / 2) }).map((_, i) => (
+          <div key={`top-${i}`} style={{ height: ITEM_H }} />
+        ))}
+        {items.map((val) => (
+          <div
+            key={val}
+            onClick={() => {
+              onSelect(val);
+              const el = containerRef.current;
+              if (el) el.scrollTop = items.indexOf(val) * ITEM_H;
+            }}
+            style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
+            className={clsx(
+              'flex items-center justify-center text-lg font-medium transition-all duration-150',
+              val === selected ? 'text-slate-900 text-2xl font-bold' : 'text-slate-400'
+            )}
+          >
+            {String(val).padStart(2, '0')}
+          </div>
+        ))}
+        {/* bottom padding phantom rows */}
+        {Array.from({ length: Math.floor(VISIBLE / 2) }).map((_, i) => (
+          <div key={`bot-${i}`} style={{ height: ITEM_H }} />
+        ))}
+      </div>
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">{label}</span>
+    </div>
+  );
+};
+
+const HOURS_LIST = Array.from({ length: 24 }, (_, i) => i);
+const MINUTES_LIST = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+
+const TimerPickerModal: React.FC<TimerPickerModalProps> = ({ domain, initialMinutes, onConfirm, onCancel, onDelete }) => {
+  const initH = Math.floor(initialMinutes / 60);
+  const initM = MINUTES_LIST.reduce((prev, cur) =>
+    Math.abs(cur - (initialMinutes % 60)) < Math.abs(prev - (initialMinutes % 60)) ? cur : prev, 0);
+
+  const [hours, setHours] = useState(initH);
+  const [minutes, setMinutes] = useState(initM);
+
+  const total = hours * 60 + minutes;
+  const isGlobal = domain === null;
+  const displayName = isGlobal ? 'your daily screen time' : domain!;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-[340px] overflow-hidden"
+        style={{ animation: 'timerModalIn 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
+      >
+        {/* Header */}
+        <div className="px-6 pt-6 pb-2">
+          <h2 className="text-[18px] font-bold text-slate-900 mb-1">Set app timer</h2>
+          <p className="text-sm text-slate-500 leading-snug">
+            This app timer for <span className="font-semibold text-slate-700">{displayName}</span> will reset at midnight
+          </p>
+        </div>
+
+        {/* Drum-roll pickers */}
+        <div className="relative flex justify-center items-center gap-4 py-4 mx-6">
+          {/* Selection highlight band */}
+          <div
+            className="absolute left-0 right-0 rounded-xl bg-slate-100 pointer-events-none"
+            style={{ top: '50%', transform: 'translateY(-50%)', height: 48 }}
+          />
+          <DrumColumn items={HOURS_LIST}   selected={hours}   onSelect={setHours}   label="hrs" />
+          <span className="text-2xl font-bold text-slate-300 relative z-10 mb-6">:</span>
+          <DrumColumn items={MINUTES_LIST} selected={minutes} onSelect={setMinutes} label="mins" />
+        </div>
+
+        {/* Summary */}
+        {total > 0 ? (
+          <p className="text-center text-xs font-semibold text-indigo-600 pb-1">
+            {hours > 0 && `${hours}h `}{minutes > 0 && `${minutes}m`} limit
+          </p>
+        ) : (
+          <p className="text-center text-xs text-rose-500 font-semibold pb-1">No limit will be set</p>
+        )}
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
+          {/* Delete timer — only shown when a limit already exists */}
+          {onDelete ? (
+            <button
+              onClick={onDelete}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-sm font-bold text-indigo-500 hover:bg-indigo-50 transition-all"
+              title="Delete timer"
+            >
+              <Trash2 size={15} />
+              Delete
+            </button>
+          ) : (
+            <span />
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={onCancel}
+              className="px-5 py-2.5 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onConfirm(total)}
+              className="px-5 py-2.5 rounded-2xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-all"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes timerModalIn {
+          from { opacity: 0; transform: scale(0.85); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Type definitions matching the new schema
 interface DomainMetrics {
@@ -87,6 +300,13 @@ if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
   };
 }
 
+// Modal state type
+interface TimerModalState {
+  open: boolean;
+  domain: string | null; // null = global daily goal
+  initialMinutes: number;
+}
+
 const ActivityDetails: React.FC = () => {
   const [width, setWidth] = useState(window.innerWidth);
   const [allStorage, setAllStorage] = useState<Record<string, any>>({});
@@ -95,6 +315,37 @@ const ActivityDetails: React.FC = () => {
     periodicAlerts: true,
   });
   const [siteSettings, setSiteSettings] = useState<Record<string, SiteSettings>>({});
+  const [timerModal, setTimerModal] = useState<TimerModalState>({ open: false, domain: null, initialMinutes: 0 });
+
+  const openTimerModal = (domain: string | null, initialMinutes: number) => {
+    setTimerModal({ open: true, domain, initialMinutes });
+  };
+
+  const handleTimerConfirm = async (totalMinutes: number) => {
+    setTimerModal({ open: false, domain: null, initialMinutes: 0 });
+    if (timerModal.domain === null) {
+      // Global daily goal
+      if (totalMinutes > 0) {
+        await updateGlobalSetting('dailyGoal', totalMinutes);
+      }
+    } else {
+      // Per-site limit
+      const limitSecs = totalMinutes > 0 ? totalMinutes * 60 : null;
+      await updateSiteLimit(timerModal.domain, limitSecs);
+    }
+  };
+
+  const handleTimerCancel = () => {
+    setTimerModal({ open: false, domain: null, initialMinutes: 0 });
+  };
+
+  const handleTimerDelete = async () => {
+    const domain = timerModal.domain;
+    setTimerModal({ open: false, domain: null, initialMinutes: 0 });
+    if (domain !== null) {
+      await updateSiteLimit(domain, null);
+    }
+  };
 
   // Get date strings for the last 7 calendar days
   const last7Days = useMemo(() => getLast7Days(), []);
@@ -432,16 +683,7 @@ const ActivityDetails: React.FC = () => {
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => {
-                        const mins = prompt(
-                          `Set daily limit for ${domain} in minutes (0 to remove):`,
-                          config.dailyLimit ? (config.dailyLimit / 60).toString() : '0'
-                        );
-                        if (mins !== null) {
-                          const limitSecs = parseInt(mins) > 0 ? parseInt(mins) * 60 : null;
-                          updateSiteLimit(domain, limitSecs);
-                        }
-                      }}
+                      onClick={() => openTimerModal(domain, config.dailyLimit ? Math.round(config.dailyLimit / 60) : 0)}
                       className={clsx(
                         "p-2.5 rounded-xl border transition-all",
                         config.dailyLimit
@@ -499,15 +741,7 @@ const ActivityDetails: React.FC = () => {
                 <div className="text-[11px] text-slate-400 font-medium mt-0.5">Set daily overall screen time target</div>
               </div>
               <button
-                onClick={() => {
-                  const mins = prompt('Set daily overall goal in minutes:', globalSettings.dailyGoal.toString());
-                  if (mins) {
-                    const parsed = parseInt(mins);
-                    if (!isNaN(parsed) && parsed > 0) {
-                      updateGlobalSetting('dailyGoal', parsed);
-                    }
-                  }
-                }}
+                onClick={() => openTimerModal(null, globalSettings.dailyGoal)}
                 className="text-indigo-600 font-extrabold hover:bg-indigo-50 border border-indigo-50 hover:border-indigo-100 px-4 py-1.5 rounded-xl transition-all text-xs"
               >
                 {globalSettings.dailyGoal < 60
@@ -518,6 +752,21 @@ const ActivityDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Timer Picker Modal */}
+      {timerModal.open && (
+        <TimerPickerModal
+          domain={timerModal.domain}
+          initialMinutes={timerModal.initialMinutes}
+          onConfirm={handleTimerConfirm}
+          onCancel={handleTimerCancel}
+          onDelete={
+            timerModal.domain !== null && timerModal.initialMinutes > 0
+              ? handleTimerDelete
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 };
