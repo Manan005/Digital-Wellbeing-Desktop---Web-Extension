@@ -3,7 +3,7 @@
   "name": "Digital Wellbeing Tracker",
   "version": "1.0.0",
   "description": "Monitor and manage your screen time.",
-  "permissions": ["storage", "tabs", "activeTab", "scripting"],
+  "permissions": ["storage", "tabs", "activeTab", "scripting", "favicon"],
   "action": {
     "default_popup": "index.html"
   },

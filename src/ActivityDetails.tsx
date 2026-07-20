@@ -663,7 +663,7 @@ const ActivityDetails: React.FC = () => {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#f8f9ff] rounded-2xl flex items-center justify-center border border-slate-100">
                       <img
-                        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+                        src={`chrome-extension://_favicon/?pageUrl=${encodeURIComponent('https://' + domain)}&size=64`}
                         className="w-8 h-8 rounded-md"
                         alt={domain}
                         onError={(e) => {

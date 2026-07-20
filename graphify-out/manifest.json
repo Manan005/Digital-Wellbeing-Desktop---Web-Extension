@@ -5,9 +5,9 @@
     "semantic_hash": "ddc6069a85a1acc06096e06bcd8087ac"
   },
   "manifest.json": {
-    "mtime": 1780596259.358547,
-    "ast_hash": "e4f96492f409028813693e8bf1cd545f",
-    "semantic_hash": "e4f96492f409028813693e8bf1cd545f"
+    "mtime": 1784477955.8998907,
+    "ast_hash": "22f7e4f2d37ba70761aab2991b2f74d5",
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1780596259.362024,
@@ -20,8 +20,8 @@
     "semantic_hash": "5b84f4567208c7c747079c0477373231"
   },
   "src/ActivityDetails.tsx": {
-    "mtime": 1781458316.2054002,
-    "ast_hash": "10ae2d4d217923df72f512f3ddf5da27",
+    "mtime": 1784477982.42115,
+    "ast_hash": "ca1a2dc8aee64b45e55da95c1752f7f9",
     "semantic_hash": ""
   },
   "src/App.tsx": {
@@ -35,9 +35,9 @@
     "semantic_hash": "267d83d8a518b95b1409f14a8d2aa0ad"
   },
   "src/content/index.tsx": {
-    "mtime": 1780737283.115387,
-    "ast_hash": "a1b592347a5f1ea5ddb6c234a5778387",
-    "semantic_hash": "a1b592347a5f1ea5ddb6c234a5778387"
+    "mtime": 1784477962.6265774,
+    "ast_hash": "c2c1bb9aa3c4a72d6de4564d6c65fabe",
+    "semantic_hash": ""
   },
   "src/main.tsx": {
     "mtime": 1780596259.3684564,

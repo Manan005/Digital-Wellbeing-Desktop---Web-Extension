@@ -220,7 +220,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "package_dependencies",
-      "community": 7,
+      "community": 5,
       "norm_label": "dependencies"
     },
     {
@@ -230,7 +230,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "package_dependencies_react",
-      "community": 7,
+      "community": 5,
       "norm_label": "react"
     },
     {
@@ -240,7 +240,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "package_dependencies_react_dom",
-      "community": 7,
+      "community": 5,
       "norm_label": "react-dom"
     },
     {
@@ -250,7 +250,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "package_dependencies_lucide_react",
-      "community": 7,
+      "community": 5,
       "norm_label": "lucide-react"
     },
     {
@@ -260,7 +260,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "package_dependencies_clsx",
-      "community": 7,
+      "community": 5,
       "norm_label": "clsx"
     },
     {
@@ -270,7 +270,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "package_dependencies_tailwind_merge",
-      "community": 7,
+      "community": 5,
       "norm_label": "tailwind-merge"
     },
     {
@@ -404,10 +404,60 @@
       "norm_label": "activitydetails.tsx"
     },
     {
+      "label": "TimerPickerModalProps",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "src_activitydetails_timerpickermodalprops",
+      "community": 3,
+      "norm_label": "timerpickermodalprops"
+    },
+    {
+      "label": "DrumColumn()",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "src_activitydetails_drumcolumn",
+      "community": 3,
+      "norm_label": "drumcolumn()"
+    },
+    {
+      "label": "HOURS_LIST",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L121",
+      "_origin": "ast",
+      "id": "src_activitydetails_hours_list",
+      "community": 3,
+      "norm_label": "hours_list"
+    },
+    {
+      "label": "MINUTES_LIST",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "src_activitydetails_minutes_list",
+      "community": 3,
+      "norm_label": "minutes_list"
+    },
+    {
+      "label": "TimerPickerModal()",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "src_activitydetails_timerpickermodal",
+      "community": 3,
+      "norm_label": "timerpickermodal()"
+    },
+    {
       "label": "DomainMetrics",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L7",
+      "source_location": "L220",
       "_origin": "ast",
       "id": "src_activitydetails_domainmetrics",
       "community": 3,
@@ -417,7 +467,7 @@
       "label": "SiteSettings",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L12",
+      "source_location": "L225",
       "_origin": "ast",
       "id": "src_activitydetails_sitesettings",
       "community": 3,
@@ -427,7 +477,7 @@
       "label": "GlobalSettings",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L17",
+      "source_location": "L230",
       "_origin": "ast",
       "id": "src_activitydetails_globalsettings",
       "community": 3,
@@ -437,17 +487,27 @@
       "label": "listeners",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L23",
+      "source_location": "L236",
       "_origin": "ast",
       "id": "src_activitydetails_listeners",
       "community": 3,
       "norm_label": "listeners"
     },
     {
+      "label": "TimerModalState",
+      "file_type": "code",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L304",
+      "_origin": "ast",
+      "id": "src_activitydetails_timermodalstate",
+      "community": 3,
+      "norm_label": "timermodalstate"
+    },
+    {
       "label": "ActivityDetails()",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L90",
+      "source_location": "L310",
       "_origin": "ast",
       "id": "src_activitydetails_activitydetails",
       "community": 3,
@@ -460,7 +520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app",
-      "community": 3,
+      "community": 7,
       "norm_label": "app.tsx"
     },
     {
@@ -470,7 +530,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_app",
-      "community": 3,
+      "community": 7,
       "norm_label": "app()"
     },
     {
@@ -597,7 +657,7 @@
       "label": "root",
       "file_type": "code",
       "source_file": "src/content/index.tsx",
-      "source_location": "L84",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "content_index_root",
       "community": 8,
@@ -610,7 +670,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_main",
-      "community": 3,
+      "community": 7,
       "norm_label": "main.tsx"
     },
     {
@@ -1332,6 +1392,16 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L17",
       "weight": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_drumcolumn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_activitydetails",
       "target": "src_activitydetails_globalsettings"
@@ -1340,10 +1410,30 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L23",
+      "source_location": "L121",
       "weight": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_listeners",
+      "target": "src_activitydetails_hours_list",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_listeners"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_minutes_list",
       "confidence_score": 1.0
     },
     {
@@ -1355,6 +1445,36 @@
       "confidence_score": 1.0,
       "source": "src_activitydetails",
       "target": "src_activitydetails_sitesettings"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L304",
+      "weight": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_timermodalstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_timerpickermodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_activitydetails",
+      "target": "src_activitydetails_timerpickermodalprops",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -1902,5 +2022,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2b714832686434d198b163b630c0e8ac80b5432c"
+  "built_at_commit": "eb222f99676a1541e4cade9da7811367c4446170"
 }

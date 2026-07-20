@@ -42,10 +42,14 @@ const ContentApp: React.FC = () => {
     <div className="digital-wellbeing-wrapper">
       {showNotch && (
         <div className="dw-notch-container">
-          <div className="dw-notch">
+          <div 
+            className="dw-notch"
+            onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' }).catch(() => {})}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="dw-notch-icon">
               <img 
-                src={`https://www.google.com/s2/favicons?domain=${notchDomain}&sz=64`} 
+                src={`chrome-extension://_favicon/?pageUrl=${encodeURIComponent('https://' + notchDomain)}&size=64`} 
                 alt="" 
               />
             </div>

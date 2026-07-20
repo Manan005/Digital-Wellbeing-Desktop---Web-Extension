@@ -25,6 +25,8 @@ Thumbs.db
 # Design reference images (not part of source code)
 images/
 
+src/test_component/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

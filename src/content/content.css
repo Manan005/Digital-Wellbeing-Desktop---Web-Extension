@@ -18,11 +18,19 @@
   padding: 8px 16px;
   border-radius: 9999px;
   display: flex;
-  items-center: center;
+  align-items: center;
   gap: 12px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   min-width: 180px;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+}
+
+.dw-notch:hover {
+  transform: scale(1.05);
+  background: #005d4b;
 }
 
 .dw-notch-icon {
