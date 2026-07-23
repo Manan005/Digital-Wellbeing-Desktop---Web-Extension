@@ -5,8 +5,8 @@
     "semantic_hash": "ddc6069a85a1acc06096e06bcd8087ac"
   },
   "manifest.json": {
-    "mtime": 1784477955.8998907,
-    "ast_hash": "22f7e4f2d37ba70761aab2991b2f74d5",
+    "mtime": 1784777261.6732848,
+    "ast_hash": "ed4ac065aa29cb7a3781a40867e60639",
     "semantic_hash": ""
   },
   "package.json": {
@@ -20,8 +20,8 @@
     "semantic_hash": "5b84f4567208c7c747079c0477373231"
   },
   "src/ActivityDetails.tsx": {
-    "mtime": 1784477982.42115,
-    "ast_hash": "ca1a2dc8aee64b45e55da95c1752f7f9",
+    "mtime": 1784785205.0689228,
+    "ast_hash": "4000a02f3128e8fa11434ae60531502a",
     "semantic_hash": ""
   },
   "src/App.tsx": {
@@ -30,13 +30,13 @@
     "semantic_hash": "ebd40a39d616f81e2095d3171ceb8f02"
   },
   "src/background.ts": {
-    "mtime": 1780737283.1143441,
-    "ast_hash": "267d83d8a518b95b1409f14a8d2aa0ad",
-    "semantic_hash": "267d83d8a518b95b1409f14a8d2aa0ad"
+    "mtime": 1784785182.2742333,
+    "ast_hash": "282d3f91b94be973168e3f69d544484f",
+    "semantic_hash": ""
   },
   "src/content/index.tsx": {
-    "mtime": 1784477962.6265774,
-    "ast_hash": "c2c1bb9aa3c4a72d6de4564d6c65fabe",
+    "mtime": 1784785190.0663922,
+    "ast_hash": "f1f1b4f90a5a1a9be0dce07a33865b43",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -50,9 +50,9 @@
     "semantic_hash": "3fec02262577b5e1693578cdb61fa6e4"
   },
   "tailwind.config.js": {
-    "mtime": 1780596259.3694541,
-    "ast_hash": "9afb21cebd97d1d0507d3a6067926a05",
-    "semantic_hash": "9afb21cebd97d1d0507d3a6067926a05"
+    "mtime": 1784783911.1031027,
+    "ast_hash": "82ce0d0bb3481ba5a5fa8c0bcf9f167c",
+    "semantic_hash": ""
   },
   "tsconfig.json": {
     "mtime": 1780596259.369776,
@@ -68,5 +68,15 @@
     "mtime": 1780596259.3706503,
     "ast_hash": "aed955d10c82a0eef5935911bdf33fbe",
     "semantic_hash": "aed955d10c82a0eef5935911bdf33fbe"
+  },
+  "vite.config.ts.timestamp-1784638174662-aca0e4f6d438f.mjs": {
+    "mtime": 1784638174.6639993,
+    "ast_hash": "74b124c6081b19d72376905c39552ae0",
+    "semantic_hash": ""
+  },
+  "src/utils/favicon.ts": {
+    "mtime": 1784777255.189512,
+    "ast_hash": "f23324fe1be04f5acc4a92a3ccd84f29",
+    "semantic_hash": ""
   }
 }

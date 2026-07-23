@@ -1,0 +1,44 @@
+// vite.config.ts
+import { defineConfig } from "file:///D:/Brainstorm/Chrome%20Extension%20Digital%20wellbeing/node_modules/vite/dist/node/index.js";
+import react from "file:///D:/Brainstorm/Chrome%20Extension%20Digital%20wellbeing/node_modules/@vitejs/plugin-react/dist/index.js";
+import { crx } from "file:///D:/Brainstorm/Chrome%20Extension%20Digital%20wellbeing/node_modules/@crxjs/vite-plugin/dist/index.mjs";
+
+// manifest.json
+var manifest_default = {
+  manifest_version: 3,
+  name: "Digital Wellbeing Tracker",
+  version: "1.0.0",
+  description: "Monitor and manage your screen time.",
+  permissions: ["storage", "tabs", "activeTab", "scripting", "favicon", "aiLanguageModel"],
+  action: {
+    default_popup: "index.html"
+  },
+  background: {
+    service_worker: "src/background.ts",
+    type: "module"
+  },
+  content_scripts: [
+    {
+      matches: ["<all_urls>"],
+      js: ["src/content/index.tsx"]
+    }
+  ],
+  web_accessible_resources: [
+    {
+      resources: ["_favicon/*"],
+      matches: ["<all_urls>"]
+    }
+  ]
+};
+
+// vite.config.ts
+var vite_config_default = defineConfig({
+  plugins: [
+    react(),
+    crx({ manifest: manifest_default })
+  ]
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcudHMiLCAibWFuaWZlc3QuanNvbiJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiY29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2Rpcm5hbWUgPSBcIkQ6XFxcXEJyYWluc3Rvcm1cXFxcQ2hyb21lIEV4dGVuc2lvbiBEaWdpdGFsIHdlbGxiZWluZ1wiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9maWxlbmFtZSA9IFwiRDpcXFxcQnJhaW5zdG9ybVxcXFxDaHJvbWUgRXh0ZW5zaW9uIERpZ2l0YWwgd2VsbGJlaW5nXFxcXHZpdGUuY29uZmlnLnRzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9EOi9CcmFpbnN0b3JtL0Nocm9tZSUyMEV4dGVuc2lvbiUyMERpZ2l0YWwlMjB3ZWxsYmVpbmcvdml0ZS5jb25maWcudHNcIjtpbXBvcnQgeyBkZWZpbmVDb25maWcgfSBmcm9tICd2aXRlJ1xyXG5pbXBvcnQgcmVhY3QgZnJvbSAnQHZpdGVqcy9wbHVnaW4tcmVhY3QnXHJcbmltcG9ydCB7IGNyeCB9IGZyb20gJ0Bjcnhqcy92aXRlLXBsdWdpbidcclxuaW1wb3J0IG1hbmlmZXN0IGZyb20gJy4vbWFuaWZlc3QuanNvbidcclxuXHJcbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XHJcbiAgcGx1Z2luczogW1xyXG4gICAgcmVhY3QoKSxcclxuICAgIGNyeCh7IG1hbmlmZXN0IH0pLFxyXG4gIF0sXHJcbn0pXHJcbiIsICJ7XHJcbiAgXCJtYW5pZmVzdF92ZXJzaW9uXCI6IDMsXHJcbiAgXCJuYW1lXCI6IFwiRGlnaXRhbCBXZWxsYmVpbmcgVHJhY2tlclwiLFxyXG4gIFwidmVyc2lvblwiOiBcIjEuMC4wXCIsXHJcbiAgXCJkZXNjcmlwdGlvblwiOiBcIk1vbml0b3IgYW5kIG1hbmFnZSB5b3VyIHNjcmVlbiB0aW1lLlwiLFxyXG4gIFwicGVybWlzc2lvbnNcIjogW1wic3RvcmFnZVwiLCBcInRhYnNcIiwgXCJhY3RpdmVUYWJcIiwgXCJzY3JpcHRpbmdcIiwgXCJmYXZpY29uXCIsIFwiYWlMYW5ndWFnZU1vZGVsXCJdLFxyXG4gIFwiYWN0aW9uXCI6IHtcclxuICAgIFwiZGVmYXVsdF9wb3B1cFwiOiBcImluZGV4Lmh0bWxcIlxyXG4gIH0sXHJcbiAgXCJiYWNrZ3JvdW5kXCI6IHtcclxuICAgIFwic2VydmljZV93b3JrZXJcIjogXCJzcmMvYmFja2dyb3VuZC50c1wiLFxyXG4gICAgXCJ0eXBlXCI6IFwibW9kdWxlXCJcclxuICB9LFxyXG4gIFwiY29udGVudF9zY3JpcHRzXCI6IFtcclxuICAgIHtcclxuICAgICAgXCJtYXRjaGVzXCI6IFtcIjxhbGxfdXJscz5cIl0sXHJcbiAgICAgIFwianNcIjogW1wic3JjL2NvbnRlbnQvaW5kZXgudHN4XCJdXHJcbiAgICB9XHJcbiAgXSxcclxuICBcIndlYl9hY2Nlc3NpYmxlX3Jlc291cmNlc1wiOiBbXHJcbiAgICB7XHJcbiAgICAgIFwicmVzb3VyY2VzXCI6IFtcIl9mYXZpY29uLypcIl0sXHJcbiAgICAgIFwibWF0Y2hlc1wiOiBbXCI8YWxsX3VybHM+XCJdXHJcbiAgICB9XHJcbiAgXVxyXG59XHJcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBOFUsU0FBUyxvQkFBb0I7QUFDM1csT0FBTyxXQUFXO0FBQ2xCLFNBQVMsV0FBVzs7O0FDRnBCO0FBQUEsRUFDRSxrQkFBb0I7QUFBQSxFQUNwQixNQUFRO0FBQUEsRUFDUixTQUFXO0FBQUEsRUFDWCxhQUFlO0FBQUEsRUFDZixhQUFlLENBQUMsV0FBVyxRQUFRLGFBQWEsYUFBYSxXQUFXLGlCQUFpQjtBQUFBLEVBQ3pGLFFBQVU7QUFBQSxJQUNSLGVBQWlCO0FBQUEsRUFDbkI7QUFBQSxFQUNBLFlBQWM7QUFBQSxJQUNaLGdCQUFrQjtBQUFBLElBQ2xCLE1BQVE7QUFBQSxFQUNWO0FBQUEsRUFDQSxpQkFBbUI7QUFBQSxJQUNqQjtBQUFBLE1BQ0UsU0FBVyxDQUFDLFlBQVk7QUFBQSxNQUN4QixJQUFNLENBQUMsdUJBQXVCO0FBQUEsSUFDaEM7QUFBQSxFQUNGO0FBQUEsRUFDQSwwQkFBNEI7QUFBQSxJQUMxQjtBQUFBLE1BQ0UsV0FBYSxDQUFDLFlBQVk7QUFBQSxNQUMxQixTQUFXLENBQUMsWUFBWTtBQUFBLElBQzFCO0FBQUEsRUFDRjtBQUNGOzs7QURwQkEsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsU0FBUztBQUFBLElBQ1AsTUFBTTtBQUFBLElBQ04sSUFBSSxFQUFFLDJCQUFTLENBQUM7QUFBQSxFQUNsQjtBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

@@ -57,15 +57,33 @@ The extension utilizes four distinct theme environments to establish clear visua
 
 ## 🔤 Typography & Grid Scale
 
-The UI utilizes a modern typography scale centered on **Inter** and **Google Sans** or system-default geometric sans-serif typefaces.
+The UI uses **DM Sans** as the primary typeface — an open-source geometric sans-serif that closely mirrors Google Sans (the font used in Android's Digital Wellbeing UI). DM Sans is loaded from Google Fonts and applied globally across all views.
 
+**Why DM Sans:** Rounded terminals, optically-correct letter-spacing, and clean numeric rendering make it the ideal match for the Android Digital Wellbeing reference aesthetic. It replaces the previous `Inter` stack.
+
+### Font Load
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
 ```
-Header Large (Times/Totals)  ─── 48px / 3rem (Font-Weight: 800/Black)
-Header Medium (Titles)      ─── 30px / 1.875rem (Font-Weight: 700/Bold)
-Card Headers                ─── 18px / 1.125rem (Font-Weight: 700/Bold)
-Body Text                   ─── 14px / 0.875rem (Font-Weight: 500/Medium)
-Labels / Badges / Tooltips  ─── 11px / 0.6875rem (Font-Weight: 600/Semi-bold)
-Mono / Time Fills           ─── 12px / 0.75rem (Font-Weight: 600/Semi-bold, tabular-nums)
+
+### Type Scale
+```
+Header Large (Times/Totals)  ─── 48px / 3rem       (Weight: 400  — matches Android's light large numerals)
+Header Medium (Page Titles)  ─── 30px / 1.875rem   (Weight: 400  — matches Android's page title weight)
+Card Headers / Site Names    ─── 18px / 1.125rem   (Weight: 500  — medium, readable)
+Body Text                    ─── 14px / 0.875rem   (Weight: 400  — default body)
+Labels / Badges / Tooltips   ─── 11px / 0.6875rem  (Weight: 600  — semi-bold small caps)
+Mono / Time Fills            ─── 12px / 0.75rem    (Weight: 600  — tabular-nums, time values)
+```
+
+### CSS Custom Property
+```css
+:root {
+  --font-sans: 'DM Sans', 'Google Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
 ```
 
 ---

@@ -105,23 +105,48 @@ const incrementTimeSpent = async (domain: string) => {
   }
 
   // Daily limit enforcement logic
-  if (siteConfig.dailyLimit && metrics.timeSpentSeconds >= siteConfig.dailyLimit) {
+  if (siteConfig.dailyLimit !== null && metrics.timeSpentSeconds >= siteConfig.dailyLimit) {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab?.id && tab.url && getDomain(tab.url) === domain) {
       chrome.tabs.sendMessage(tab.id, { 
         type: 'SHOW_BLOCKER',
         domain: domain
-      });
+      }).catch(() => {});
     }
   }
 };
 
+// Helper to check limit and send SHOW_BLOCKER or HIDE_BLOCKER
+const checkAndEnforceLimit = async (tabId: number, domain: string) => {
+  const dateKey = getLocalDateStr();
+  const storage = await chrome.storage.local.get([dateKey, 'siteSettings']);
+  const dayData = storage[dateKey] || {};
+  const metrics: DomainMetrics = dayData[domain] || { timeSpentSeconds: 0, timesOpened: 0 };
+  const siteSettingsMap = storage.siteSettings || {};
+  const siteConfig: SiteSettings = siteSettingsMap[domain] || { dailyLimit: null, periodicAlerts: true };
+
+  if (siteConfig.dailyLimit !== null && metrics.timeSpentSeconds >= siteConfig.dailyLimit) {
+    chrome.tabs.sendMessage(tabId, {
+      type: 'SHOW_BLOCKER',
+      domain: domain
+    }).catch(() => {});
+  } else {
+    chrome.tabs.sendMessage(tabId, {
+      type: 'HIDE_BLOCKER',
+      domain: domain
+    }).catch(() => {});
+  }
+};
+
 // Listen to tab and window activity
-chrome.tabs.onActivated.addListener(async () => {
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
   await updateActiveTab();
-  if (activeDomain && activeDomain !== lastActiveDomain) {
-    await incrementTimesOpened(activeDomain);
-    lastActiveDomain = activeDomain;
+  if (activeDomain) {
+    await checkAndEnforceLimit(activeInfo.tabId, activeDomain);
+    if (activeDomain !== lastActiveDomain) {
+      await incrementTimesOpened(activeDomain);
+      lastActiveDomain = activeDomain;
+    }
   }
 });
 
@@ -137,8 +162,12 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
   }
 });
 
-chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.active) {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    const domain = getDomain(tab.url);
+    if (domain) {
+      await checkAndEnforceLimit(tabId, domain);
+    }
     const oldDomain = activeDomain;
     await updateActiveTab();
     if (activeDomain && activeDomain !== oldDomain && activeDomain !== lastActiveDomain) {
@@ -151,10 +180,25 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 // Open dashboard in full page or process HEARTBEAT tracking ticks from content scripts
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === 'OPEN_DASHBOARD') {
-    chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+    const targetUrl = message.domain
+      ? chrome.runtime.getURL(`index.html?domain=${encodeURIComponent(message.domain)}`)
+      : chrome.runtime.getURL('index.html');
+    chrome.tabs.create({ url: targetUrl });
+  } else if (message.type === 'CLOSE_TAB') {
+    if (sender.tab?.id) {
+      chrome.tabs.remove(sender.tab.id);
+    }
+  } else if (message.type === 'CHECK_LIMIT') {
+    const domain = getDomain(sender.tab?.url || message.domain);
+    if (domain && sender.tab?.id) {
+      checkAndEnforceLimit(sender.tab.id, domain);
+    }
   } else if (message.type === 'HEARTBEAT') {
     const domain = getDomain(sender.tab?.url || message.domain);
     if (domain) {
+      if (sender.tab?.id) {
+        checkAndEnforceLimit(sender.tab.id, domain);
+      }
       incrementTimeSpent(domain);
     }
   }

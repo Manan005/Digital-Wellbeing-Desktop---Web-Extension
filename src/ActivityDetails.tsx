@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { LayoutDashboard, ExternalLink, Timer, AlertCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { formatSeconds, getLast7Days } from './utils/time';
+import { getFaviconUrl } from './utils/favicon';
 
 // ─── Timer Picker Modal ────────────────────────────────────────────────────────
 
@@ -152,14 +153,20 @@ const TimerPickerModal: React.FC<TimerPickerModalProps> = ({ domain, initialMinu
         </div>
 
         {/* Drum-roll pickers */}
-        <div className="relative flex justify-center items-center gap-4 py-4 mx-6">
-          {/* Selection highlight band */}
+        {/* items-start keeps the band/colon aligned to the scroll area,
+            not the total column height (which includes the label below). */}
+        <div className="relative flex justify-center items-start gap-4 py-4 mx-6">
+          {/* Selection highlight band — pixel-exact:
+              top = py-4(16) + 2 rows(96) = 112px, so band covers rows 2-3 (the centre row). */}
           <div
             className="absolute left-0 right-0 rounded-xl bg-slate-100 pointer-events-none"
-            style={{ top: '50%', transform: 'translateY(-50%)', height: 48 }}
+            style={{ top: 112, height: 48 }}
           />
           <DrumColumn items={HOURS_LIST}   selected={hours}   onSelect={setHours}   label="hrs" />
-          <span className="text-2xl font-bold text-slate-300 relative z-10 mb-6">:</span>
+          {/* marginTop centres the colon on the band:
+              band centre = 112 + 24 = 136px from outer top
+              content top = 16px (py-4), so colon top from content = 136 - 16 - 12 = 108px */}
+          <span className="text-2xl font-bold text-slate-300 relative z-10" style={{ marginTop: 108 }}>:</span>
           <DrumColumn items={MINUTES_LIST} selected={minutes} onSelect={setMinutes} label="mins" />
         </div>
 
@@ -367,8 +374,21 @@ const ActivityDetails: React.FC = () => {
         periodicAlerts: Boolean(data.settings?.periodicAlerts ?? data.periodicAlerts ?? true),
       };
       setGlobalSettings(loadedSettings);
-      if (data.siteSettings) {
-        setSiteSettings(data.siteSettings);
+      const siteSettingsMap = data.siteSettings || {};
+      setSiteSettings(siteSettingsMap);
+
+      // Auto-open timer modal if 'domain' URL parameter is present
+      const searchParams = new URLSearchParams(window.location.search);
+      const domainParam = searchParams.get('domain');
+      if (domainParam) {
+        const domainConfig = siteSettingsMap[domainParam] || { dailyLimit: null, periodicAlerts: true };
+        const initialMins = domainConfig.dailyLimit ? Math.round(domainConfig.dailyLimit / 60) : 0;
+        setTimerModal({
+          open: true,
+          domain: domainParam,
+          initialMinutes: initialMins
+        });
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     };
     fetchData();
@@ -663,11 +683,11 @@ const ActivityDetails: React.FC = () => {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#f8f9ff] rounded-2xl flex items-center justify-center border border-slate-100">
                       <img
-                        src={`chrome-extension://_favicon/?pageUrl=${encodeURIComponent('https://' + domain)}&size=64`}
+                        src={getFaviconUrl(domain)}
                         className="w-8 h-8 rounded-md"
                         alt={domain}
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
+                          (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
                         }}
                       />
                     </div>
@@ -761,7 +781,7 @@ const ActivityDetails: React.FC = () => {
           onConfirm={handleTimerConfirm}
           onCancel={handleTimerCancel}
           onDelete={
-            timerModal.domain !== null && timerModal.initialMinutes > 0
+            timerModal.domain !== null && (timerModal.initialMinutes > 0 || Boolean(siteSettings[timerModal.domain]?.dailyLimit))
               ? handleTimerDelete
               : undefined
           }

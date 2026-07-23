@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './content.css';
+import { getFaviconUrl } from '../utils/favicon';
 
 const ContentApp: React.FC = () => {
   const [showNotch, setShowNotch] = useState(false);
@@ -21,9 +22,25 @@ const ContentApp: React.FC = () => {
         setBlockedDomain(message.domain);
         setShowBlocker(true);
       }
+      if (message.type === 'HIDE_BLOCKER') {
+        setShowBlocker(false);
+      }
     };
     chrome.runtime.onMessage.addListener(listener);
+    
+    // Initial limit check on load
+    chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
+
     return () => chrome.runtime.onMessage.removeListener(listener);
+  }, []);
+
+  // Real-time listener for siteSettings mutation (e.g. when timer deleted in dashboard)
+  useEffect(() => {
+    const storageListener = () => {
+      chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
+    };
+    chrome.storage.onChanged.addListener(storageListener);
+    return () => chrome.storage.onChanged.removeListener(storageListener);
   }, []);
 
   // Send periodic heartbeat when user is actively viewing/focusing the page
@@ -49,8 +66,11 @@ const ContentApp: React.FC = () => {
           >
             <div className="dw-notch-icon">
               <img 
-                src={`chrome-extension://_favicon/?pageUrl=${encodeURIComponent('https://' + notchDomain)}&size=64`} 
-                alt="" 
+                src={getFaviconUrl(notchDomain)} 
+                alt={notchDomain} 
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${notchDomain}&sz=64`;
+                }}
               />
             </div>
             <span className="dw-notch-text">Used for {notchMinutes}m</span>
@@ -68,13 +88,19 @@ const ContentApp: React.FC = () => {
             </div>
             <h1 className="dw-blocker-title">App paused</h1>
             <p className="dw-blocker-message">
-              Your {blockedDomain} timer ran out. It'll start again tomorrow.
+              Your {blockedDomain || window.location.hostname} timer ran out. It'll start again tomorrow.
             </p>
             <div className="dw-blocker-footer">
-              <button className="dw-btn-text" onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' })}>
+              <button 
+                className="dw-btn-text" 
+                onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD', domain: blockedDomain || window.location.hostname }).catch(() => {})}
+              >
                 Settings
               </button>
-              <button className="dw-btn-primary" onClick={() => window.close()}>
+              <button 
+                className="dw-btn-primary" 
+                onClick={() => chrome.runtime.sendMessage({ type: 'CLOSE_TAB' }).catch(() => {})}
+              >
                 OK
               </button>
             </div>

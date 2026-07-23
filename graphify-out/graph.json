@@ -124,6 +124,16 @@
       "norm_label": "content_scripts"
     },
     {
+      "label": "web_accessible_resources",
+      "file_type": "code",
+      "source_file": "manifest.json",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "manifest_web_accessible_resources",
+      "community": 1,
+      "norm_label": "web_accessible_resources"
+    },
+    {
       "label": "package.json",
       "file_type": "code",
       "source_file": "package.json",
@@ -407,7 +417,7 @@
       "label": "TimerPickerModalProps",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "src_activitydetails_timerpickermodalprops",
       "community": 3,
@@ -417,7 +427,7 @@
       "label": "DrumColumn()",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "src_activitydetails_drumcolumn",
       "community": 3,
@@ -427,7 +437,7 @@
       "label": "HOURS_LIST",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L121",
+      "source_location": "L122",
       "_origin": "ast",
       "id": "src_activitydetails_hours_list",
       "community": 3,
@@ -437,7 +447,7 @@
       "label": "MINUTES_LIST",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L122",
+      "source_location": "L123",
       "_origin": "ast",
       "id": "src_activitydetails_minutes_list",
       "community": 3,
@@ -447,7 +457,7 @@
       "label": "TimerPickerModal()",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L124",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "src_activitydetails_timerpickermodal",
       "community": 3,
@@ -457,7 +467,7 @@
       "label": "DomainMetrics",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L220",
+      "source_location": "L227",
       "_origin": "ast",
       "id": "src_activitydetails_domainmetrics",
       "community": 3,
@@ -467,7 +477,7 @@
       "label": "SiteSettings",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L225",
+      "source_location": "L232",
       "_origin": "ast",
       "id": "src_activitydetails_sitesettings",
       "community": 3,
@@ -477,7 +487,7 @@
       "label": "GlobalSettings",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L230",
+      "source_location": "L237",
       "_origin": "ast",
       "id": "src_activitydetails_globalsettings",
       "community": 3,
@@ -487,7 +497,7 @@
       "label": "listeners",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L236",
+      "source_location": "L243",
       "_origin": "ast",
       "id": "src_activitydetails_listeners",
       "community": 3,
@@ -497,7 +507,7 @@
       "label": "TimerModalState",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L304",
+      "source_location": "L311",
       "_origin": "ast",
       "id": "src_activitydetails_timermodalstate",
       "community": 3,
@@ -507,7 +517,7 @@
       "label": "ActivityDetails()",
       "file_type": "code",
       "source_file": "src/ActivityDetails.tsx",
-      "source_location": "L310",
+      "source_location": "L317",
       "_origin": "ast",
       "id": "src_activitydetails_activitydetails",
       "community": 3,
@@ -614,10 +624,20 @@
       "norm_label": "incrementtimespent()"
     },
     {
+      "label": "checkAndEnforceLimit()",
+      "file_type": "code",
+      "source_file": "src/background.ts",
+      "source_location": "L120",
+      "_origin": "ast",
+      "id": "src_background_checkandenforcelimit",
+      "community": 4,
+      "norm_label": "checkandenforcelimit()"
+    },
+    {
       "label": "migrateOldStorageSchema()",
       "file_type": "code",
       "source_file": "src/background.ts",
-      "source_location": "L164",
+      "source_location": "L208",
       "_origin": "ast",
       "id": "src_background_migrateoldstorageschema",
       "community": 4,
@@ -627,7 +647,7 @@
       "label": "initialize()",
       "file_type": "code",
       "source_file": "src/background.ts",
-      "source_location": "L251",
+      "source_location": "L295",
       "_origin": "ast",
       "id": "src_background_initialize",
       "community": 4,
@@ -647,7 +667,7 @@
       "label": "ContentApp()",
       "file_type": "code",
       "source_file": "src/content/index.tsx",
-      "source_location": "L5",
+      "source_location": "L6",
       "_origin": "ast",
       "id": "content_index_contentapp",
       "community": 8,
@@ -657,7 +677,7 @@
       "label": "root",
       "file_type": "code",
       "source_file": "src/content/index.tsx",
-      "source_location": "L88",
+      "source_location": "L114",
       "_origin": "ast",
       "id": "content_index_root",
       "community": 8,
@@ -672,6 +692,26 @@
       "id": "src_main",
       "community": 7,
       "norm_label": "main.tsx"
+    },
+    {
+      "label": "favicon.ts",
+      "file_type": "code",
+      "source_file": "src/utils/favicon.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "utils_favicon",
+      "community": 8,
+      "norm_label": "favicon.ts"
+    },
+    {
+      "label": "getFaviconUrl()",
+      "file_type": "code",
+      "source_file": "src/utils/favicon.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "utils_favicon_getfaviconurl",
+      "community": 8,
+      "norm_label": "getfaviconurl()"
     },
     {
       "label": "time.ts",
@@ -992,6 +1032,16 @@
       "id": "vite_config",
       "community": 1,
       "norm_label": "vite.config.ts"
+    },
+    {
+      "label": "vite.config.ts.timestamp-1784638174662-aca0e4f6d438f.mjs",
+      "file_type": "code",
+      "source_file": "vite.config.ts.timestamp-1784638174662-aca0e4f6d438f.mjs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "vite_config_ts_timestamp_1784638174662_aca0e4f6d438f",
+      "community": 11,
+      "norm_label": "vite.config.ts.timestamp-1784638174662-aca0e4f6d438f.mjs"
     }
   ],
   "links": [
@@ -1074,6 +1124,16 @@
       "confidence_score": 1.0,
       "source": "manifest",
       "target": "manifest_version"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "manifest.json",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manifest",
+      "target": "manifest_web_accessible_resources"
     },
     {
       "relation": "imports_from",
@@ -1392,9 +1452,9 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_drumcolumn",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_drumcolumn"
     },
     {
       "relation": "contains",
@@ -1412,9 +1472,9 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_hours_list",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_hours_list"
     },
     {
       "relation": "contains",
@@ -1432,9 +1492,9 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L122",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_minutes_list",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_minutes_list"
     },
     {
       "relation": "contains",
@@ -1452,9 +1512,9 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L304",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_timermodalstate",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_timermodalstate"
     },
     {
       "relation": "contains",
@@ -1462,9 +1522,9 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_timerpickermodal",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_timerpickermodal"
     },
     {
       "relation": "contains",
@@ -1472,9 +1532,31 @@
       "source_file": "src/ActivityDetails.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_activitydetails",
-      "target": "src_activitydetails_timerpickermodalprops",
-      "confidence_score": 1.0
+      "target": "src_activitydetails_timerpickermodalprops"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_activitydetails",
+      "target": "utils_favicon"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ActivityDetails.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_activitydetails",
+      "target": "utils_favicon_getfaviconurl"
     },
     {
       "relation": "imports_from",
@@ -1567,6 +1649,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/background.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "src_background",
+      "target": "src_background_checkandenforcelimit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/background.ts",
       "source_location": "L7",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -1652,6 +1744,17 @@
       "confidence_score": 1.0,
       "source": "src_background",
       "target": "src_background_updateactivetab"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/background.ts",
+      "source_location": "L121",
+      "weight": 1.0,
+      "source": "src_background_checkandenforcelimit",
+      "target": "src_background_getlocaldatestr",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -1749,6 +1852,49 @@
       "confidence_score": 1.0,
       "source": "content_index",
       "target": "content_index_root"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/content/index.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "content_index",
+      "target": "utils_favicon"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/content/index.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "content_index",
+      "target": "utils_favicon_getfaviconurl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/content/index.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "content_index_contentapp",
+      "target": "utils_favicon_getfaviconurl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/favicon.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_favicon",
+      "target": "utils_favicon_getfaviconurl"
     },
     {
       "relation": "contains",
@@ -2022,5 +2168,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "eb222f99676a1541e4cade9da7811367c4446170"
+  "built_at_commit": "c4c2cb87a4a97e72adc6d7a8112ed6e18026dfe0"
 }
