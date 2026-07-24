@@ -405,6 +405,25 @@ const ActivityDetails: React.FC = () => {
     };
   }, []);
 
+  // Send periodic tracking heartbeat for the extension dashboard/popup itself when active & visible
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.hasFocus() && document.visibilityState === 'visible') {
+        const canonicalUrl = typeof chrome !== 'undefined' && chrome.runtime?.getURL
+          ? chrome.runtime.getURL('index.html')
+          : window.location.href;
+
+        chrome.runtime.sendMessage({
+          type: 'HEARTBEAT',
+          domain: canonicalUrl
+        }).catch(() => {
+          // Suppress errors during extension reload
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const updateGlobalSetting = async (key: keyof GlobalSettings, value: any) => {
     const newSettings = { ...globalSettings, [key]: value };
     setGlobalSettings(newSettings);
@@ -506,47 +525,62 @@ const ActivityDetails: React.FC = () => {
   // COMPACT POPUP LAYOUT (width < 600)
   // ----------------------------------------------------
   if (width < 600) {
-    const todaySites = selectedDateUsage.sites.slice(0, 3);
+    const todaySites = selectedDateUsage.sites;
     return (
-      <div className="w-full p-4 bg-gray-950 text-slate-100 font-sans min-h-[480px] flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between mb-5">
-            <h1 className="text-xl font-bold flex items-center gap-2 text-white">
-              <LayoutDashboard className="text-indigo-400" size={22} />
+      <div className="w-full h-full p-4 bg-[#f6f8ff] text-slate-900 font-sans flex flex-col justify-between overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <h1 className="text-xl font-bold flex items-center gap-2 text-slate-800">
+              <LayoutDashboard className="text-indigo-600" size={22} />
               Wellbeing
             </h1>
             <button
               onClick={openDashboard}
-              className="p-2 hover:bg-gray-800 rounded-xl transition-all border border-gray-800 hover:border-gray-700"
+              className="p-2 hover:bg-indigo-50 rounded-xl transition-all border border-slate-200 hover:border-indigo-100 text-slate-500 hover:text-indigo-600"
             >
               <ExternalLink size={16} />
             </button>
           </div>
 
-          <div className="bg-gray-900/60 rounded-2xl p-5 mb-5 text-center shadow-md border border-gray-800/80">
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-1 font-semibold">Today's Usage</p>
-            <div className="text-4xl font-extrabold text-indigo-400">
+          {/* Today's usage card */}
+          <div className="bg-white rounded-2xl p-4 mb-4 text-center shadow-sm border border-slate-100 flex-shrink-0">
+            <p className="text-slate-400 text-xs uppercase tracking-wider mb-1 font-semibold">Today's Usage</p>
+            <div className="text-4xl font-medium text-slate-800">
               {formatSeconds(todayTotalSeconds)}
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Top Apps</h2>
-            {todaySites.map(([domain, metrics]) => (
-              <div key={domain} className="flex items-center justify-between bg-gray-900/40 border border-gray-900 p-3 rounded-xl hover:border-gray-800 transition-all">
-                <span className="font-medium truncate max-w-[170px] text-sm text-slate-200">{domain}</span>
-                <span className="text-indigo-300 font-mono text-xs font-semibold">
-                  {formatSeconds(metrics.timeSpentSeconds)}
-                </span>
-              </div>
-            ))}
-            {todaySites.length === 0 && (
-              <p className="text-gray-500 text-center py-6 text-sm">No activity tracked yet today.</p>
-            )}
+          {/* Top sites list */}
+          <div className="flex flex-col flex-1 min-h-0 mb-4">
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1 mb-2 flex-shrink-0">Top Apps</h2>
+            <div className="space-y-2 overflow-y-auto pr-1 flex-1 custom-scrollbar">
+              {todaySites.map(([domain, metrics]) => (
+                <div key={domain} className="flex items-center justify-between bg-white border border-slate-100 p-3 rounded-xl hover:border-slate-200 transition-all shadow-sm">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <img
+                      src={getFaviconUrl(domain)}
+                      className="w-5 h-5 rounded flex-shrink-0"
+                      alt={domain}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                      }}
+                    />
+                    <span className="font-medium truncate text-sm text-slate-700" title={domain}>{domain}</span>
+                  </div>
+                  <span className="text-indigo-600 font-semibold text-xs ml-2 flex-shrink-0">
+                    {formatSeconds(metrics.timeSpentSeconds)}
+                  </span>
+                </div>
+              ))}
+              {todaySites.length === 0 && (
+                <p className="text-slate-400 text-center py-6 text-sm">No activity tracked yet today.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        <footer className="text-center text-[10px] text-slate-500 pt-4 border-t border-gray-900">
+        <footer className="text-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 flex-shrink-0">
           Digital Wellbeing Tracker • Active Screen Time
         </footer>
       </div>
@@ -578,61 +612,59 @@ const ActivityDetails: React.FC = () => {
 
         {/* 7-Day Custom Bar Graph */}
         <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 mb-8">
-          <div className="flex items-end justify-between gap-4 h-44 mb-4 border-b border-slate-100 pb-2 relative">
-            {dailyTotals.map((dayData) => {
-              const isSelected = dayData.dateStr === selectedDate;
-              const heightPercent = maxHours > 0 ? (dayData.hours / maxHours) * 100 : 0;
-              const totalMins = Math.floor(dayData.totalSeconds / 60);
-
-              return (
-                <div
-                  key={dayData.dateStr}
-                  onClick={() => setSelectedDate(dayData.dateStr)}
-                  className="flex-1 flex flex-col items-center group h-full justify-end cursor-pointer"
-                >
-                  <div
-                    className={clsx(
-                      "w-full max-w-[56px] transition-all rounded-t-lg relative hover:opacity-90 shadow-sm",
-                      isSelected ? "bg-indigo-600" : "bg-indigo-100"
-                    )}
-                    style={{
-                      height: `${heightPercent}%`,
-                      minHeight: dayData.totalSeconds > 0 ? '4px' : '0px',
-                    }}
-                  >
-                    {/* Hover Tooltip showing formatted duration */}
-                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-15 shadow-lg font-bold">
-                      {formatSeconds(dayData.totalSeconds)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            
-            {/* Axis Labels */}
-            <div className="absolute right-0 top-0 bottom-2 flex flex-col justify-between text-[9px] text-slate-400 pointer-events-none text-right pr-1 font-bold">
+          {/* Single flex row — each column owns its bar AND its label so they always align */}
+          <div className="relative pr-8">
+            {/* Y-axis labels — absolutely anchored to the right */}
+            <div className="absolute right-0 top-0 bottom-6 flex flex-col justify-between text-[9px] text-slate-400 pointer-events-none text-right font-bold">
               <span>{maxHours.toFixed(1)}h</span>
               <span>{(maxHours / 2).toFixed(1)}h</span>
               <span>0h</span>
             </div>
-          </div>
-          
-          <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider px-1">
-            {dailyTotals.map((dayData) => {
-              const isSelected = dayData.dateStr === selectedDate;
-              return (
-                <span
-                  key={dayData.dateStr}
-                  onClick={() => setSelectedDate(dayData.dateStr)}
-                  className={clsx(
-                    "cursor-pointer hover:text-indigo-600 transition-colors",
-                    isSelected ? "text-indigo-600 font-bold" : "text-slate-400"
-                  )}
-                >
-                  {getDayName(dayData.dateStr)}
-                </span>
-              );
-            })}
+
+            {/* Bars + labels unified */}
+            <div className="flex items-end justify-between gap-20 border-b border-slate-100">
+              {dailyTotals.map((dayData) => {
+                const isSelected = dayData.dateStr === selectedDate;
+                const heightPercent = maxHours > 0 ? (dayData.hours / maxHours) * 100 : 0;
+
+                return (
+                  <div
+                    key={dayData.dateStr}
+                    onClick={() => setSelectedDate(dayData.dateStr)}
+                    className="flex-1 flex flex-col items-center cursor-pointer group px-1"
+                  >
+                    {/* Bar area — fixed height so all bars scale uniformly */}
+                    <div className="w-full flex flex-col items-center justify-end h-56 pb-2">
+                      <div
+                        className={clsx(
+                          "w-full transition-all rounded-t-lg relative hover:opacity-90",
+                          isSelected ? "bg-indigo-600" : "bg-indigo-100"
+                        )}
+                        style={{
+                          height: `${heightPercent}%`,
+                          minHeight: dayData.totalSeconds > 0 ? '4px' : '0px',
+                        }}
+                      >
+                        {/* Hover Tooltip */}
+                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-lg font-bold">
+                          {formatSeconds(dayData.totalSeconds)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Day label — directly under this column's bar */}
+                    <span
+                      className={clsx(
+                        "text-[10px] font-bold uppercase tracking-wider pb-1 transition-colors",
+                        isSelected ? "text-indigo-600" : "text-slate-400 hover:text-indigo-600"
+                      )}
+                    >
+                      {getDayName(dayData.dateStr)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -667,7 +699,7 @@ const ActivityDetails: React.FC = () => {
         <div className="space-y-5">
           <div className="flex items-center justify-between px-2">
             <h2 className="text-xl font-bold text-slate-800">
-              Usage by app ({formatDateFriendly(selectedDate).toLowerCase()})
+              Usage by app ({formatDateFriendly(selectedDate)})
             </h2>
           </div>
 
@@ -701,19 +733,21 @@ const ActivityDetails: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openTimerModal(domain, config.dailyLimit ? Math.round(config.dailyLimit / 60) : 0)}
-                      className={clsx(
-                        "p-2.5 rounded-xl border transition-all",
-                        config.dailyLimit
-                          ? "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100/50"
-                          : "border-slate-100 text-slate-400 hover:bg-slate-50"
-                      )}
-                      title="Set App Limit"
-                    >
-                      <Timer size={20} />
-                    </button>
+                   <div className="flex items-center gap-2">
+                    {!domain.startsWith('chrome-extension://') && (
+                      <button
+                        onClick={() => openTimerModal(domain, config.dailyLimit ? Math.round(config.dailyLimit / 60) : 0)}
+                        className={clsx(
+                          "p-2.5 rounded-xl border transition-all",
+                          config.dailyLimit
+                            ? "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100/50"
+                            : "border-slate-100 text-slate-400 hover:bg-slate-50"
+                        )}
+                        title="Set App Limit"
+                      >
+                        <Timer size={20} />
+                      </button>
+                    )}
                   </div>
                 </div>
               );

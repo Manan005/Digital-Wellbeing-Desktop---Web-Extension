@@ -29,6 +29,15 @@ const getLocalDateStr = (): string => {
 // Helper to get domain name stripped of www. and subpages
 const getDomain = (url: string): string | null => {
   try {
+    if (url.startsWith('chrome-extension://')) {
+      const parsed = new URL(url);
+      if (parsed.pathname.includes('index.html')) {
+        if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+          return chrome.runtime.getURL('index.html');
+        }
+        return url;
+      }
+    }
     let hostname = new URL(url).hostname;
     if (hostname.startsWith('www.')) {
       hostname = hostname.substring(4);

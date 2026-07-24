@@ -8,9 +8,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #1e293b;           /* slate-800 — matches light theme primary text */
+  background-color: #f6f8ff; /* same canvas as both popup & dashboard */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,10 +25,17 @@ body {
 }
 
 @media (max-width: 599px) {
-  body {
+  html, body {
     width: 360px;
     height: 480px;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background-color: #f6f8ff; /* Edge-to-edge light canvas background */
+    box-sizing: border-box;
+  }
+  body * {
+    box-sizing: border-box;
   }
 }
 
@@ -36,6 +43,7 @@ body {
   body {
     min-width: 320px;
     width: 100%;
+    background-color: #f6f8ff; /* Soft blue-grey background for full dashboard view */
   }
 }
 
@@ -44,4 +52,19 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+/* Custom scrollbar for scrollable lists */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
 }
