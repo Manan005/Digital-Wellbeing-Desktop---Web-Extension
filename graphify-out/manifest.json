@@ -20,8 +20,8 @@
     "semantic_hash": "5b84f4567208c7c747079c0477373231"
   },
   "src/ActivityDetails.tsx": {
-    "mtime": 1784785205.0689228,
-    "ast_hash": "4000a02f3128e8fa11434ae60531502a",
+    "mtime": 1784922047.7747755,
+    "ast_hash": "15db484cfe2a998b867593c9fd6c0614",
     "semantic_hash": ""
   },
   "src/App.tsx": {
@@ -30,13 +30,13 @@
     "semantic_hash": "ebd40a39d616f81e2095d3171ceb8f02"
   },
   "src/background.ts": {
-    "mtime": 1784785182.2742333,
-    "ast_hash": "282d3f91b94be973168e3f69d544484f",
+    "mtime": 1784876843.7803335,
+    "ast_hash": "57aa2564d959f9f93177cb0437676dfb",
     "semantic_hash": ""
   },
   "src/content/index.tsx": {
-    "mtime": 1784785190.0663922,
-    "ast_hash": "f1f1b4f90a5a1a9be0dce07a33865b43",
+    "mtime": 1784876852.755824,
+    "ast_hash": "b36fa4aa178e31efc144aa9657b5472b",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -50,7 +50,7 @@
     "semantic_hash": "3fec02262577b5e1693578cdb61fa6e4"
   },
   "tailwind.config.js": {
-    "mtime": 1784783911.1031027,
+    "mtime": 1784874514.207342,
     "ast_hash": "82ce0d0bb3481ba5a5fa8c0bcf9f167c",
     "semantic_hash": ""
   },
@@ -70,13 +70,13 @@
     "semantic_hash": "aed955d10c82a0eef5935911bdf33fbe"
   },
   "vite.config.ts.timestamp-1784638174662-aca0e4f6d438f.mjs": {
-    "mtime": 1784638174.6639993,
-    "ast_hash": "74b124c6081b19d72376905c39552ae0",
+    "mtime": 1784874514.208858,
+    "ast_hash": "0a0a49b38f306004ccf266b07b18bedd",
     "semantic_hash": ""
   },
   "src/utils/favicon.ts": {
-    "mtime": 1784777255.189512,
-    "ast_hash": "f23324fe1be04f5acc4a92a3ccd84f29",
+    "mtime": 1784874530.7153492,
+    "ast_hash": "6f3c0ac7ceb4c7b84d3e2477dcfab1f9",
     "semantic_hash": ""
   }
 }

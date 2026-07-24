@@ -10,6 +10,37 @@ const ContentApp: React.FC = () => {
   const [showBlocker, setShowBlocker] = useState(false);
   const [blockedDomain, setBlockedDomain] = useState('');
 
+  const checkLimitDirectly = async () => {
+    try {
+      let hostname = window.location.hostname;
+      if (hostname.startsWith('www.')) {
+        hostname = hostname.substring(4);
+      }
+      if (!hostname) return;
+
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+
+      const storage = await chrome.storage.local.get([dateKey, 'siteSettings']);
+      const dayData = storage[dateKey] || {};
+      const metrics = dayData[hostname] || { timeSpentSeconds: 0 };
+      const siteSettingsMap = storage.siteSettings || {};
+      const siteConfig = siteSettingsMap[hostname] || { dailyLimit: null };
+
+      if (siteConfig.dailyLimit !== null && metrics.timeSpentSeconds >= siteConfig.dailyLimit) {
+        setBlockedDomain(hostname);
+        setShowBlocker(true);
+      } else {
+        setShowBlocker(false);
+      }
+    } catch (e) {
+      // Ignore
+    }
+  };
+
   useEffect(() => {
     const listener = (message: any) => {
       if (message.type === 'SHOW_NOTCH') {
@@ -29,6 +60,7 @@ const ContentApp: React.FC = () => {
     chrome.runtime.onMessage.addListener(listener);
     
     // Initial limit check on load
+    checkLimitDirectly();
     chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
 
     return () => chrome.runtime.onMessage.removeListener(listener);
@@ -37,6 +69,7 @@ const ContentApp: React.FC = () => {
   // Real-time listener for siteSettings mutation (e.g. when timer deleted in dashboard)
   useEffect(() => {
     const storageListener = () => {
+      checkLimitDirectly();
       chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
     };
     chrome.storage.onChanged.addListener(storageListener);

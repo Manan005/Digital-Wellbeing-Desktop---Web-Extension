@@ -172,11 +172,13 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
+  if (tab.url) {
     const domain = getDomain(tab.url);
     if (domain) {
       await checkAndEnforceLimit(tabId, domain);
     }
+  }
+  if (changeInfo.status === 'complete' && tab.url) {
     const oldDomain = activeDomain;
     await updateActiveTab();
     if (activeDomain && activeDomain !== oldDomain && activeDomain !== lastActiveDomain) {
@@ -192,7 +194,24 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     const targetUrl = message.domain
       ? chrome.runtime.getURL(`index.html?domain=${encodeURIComponent(message.domain)}`)
       : chrome.runtime.getURL('index.html');
-    chrome.tabs.create({ url: targetUrl });
+
+    const dashboardBaseUrl = chrome.runtime.getURL('index.html');
+
+    // Query for existing dashboard tabs to prevent creating duplicate tabs
+    chrome.tabs.query({ url: `${dashboardBaseUrl}*` }, (tabs) => {
+      if (tabs && tabs.length > 0) {
+        const existingTab = tabs[0];
+        if (existingTab.id) {
+          chrome.tabs.update(existingTab.id, { active: true, url: targetUrl }, () => {
+            if (existingTab.windowId) {
+              chrome.windows.update(existingTab.windowId, { focused: true });
+            }
+          });
+        }
+      } else {
+        chrome.tabs.create({ url: targetUrl });
+      }
+    });
   } else if (message.type === 'CLOSE_TAB') {
     if (sender.tab?.id) {
       chrome.tabs.remove(sender.tab.id);

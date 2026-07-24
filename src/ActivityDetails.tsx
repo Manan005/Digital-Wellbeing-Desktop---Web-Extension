@@ -27,14 +27,27 @@ const DrumColumn: React.FC<{
   const isDragging = useRef(false);
   const startY = useRef(0);
   const startScrollTop = useRef(0);
+  const lastSelected = useRef<number | null>(null);
+  const rafId = useRef<number | null>(null);
 
   // Sync scroll position when `selected` changes externally
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    if (selected === lastSelected.current) return;
+
+    lastSelected.current = selected;
     const idx = items.indexOf(selected);
     if (idx === -1) return;
+
+    // Instant position sync, then restore smooth behavior
+    el.style.scrollBehavior = 'auto';
     el.scrollTop = idx * ITEM_H;
+    
+    const frameId = requestAnimationFrame(() => {
+      if (el) el.style.scrollBehavior = 'smooth';
+    });
+    return () => cancelAnimationFrame(frameId);
   }, [selected, items]);
 
   const handleScroll = useCallback(() => {
@@ -43,6 +56,7 @@ const DrumColumn: React.FC<{
     const idx = Math.round(el.scrollTop / ITEM_H);
     const clamped = Math.max(0, Math.min(items.length - 1, idx));
     if (items[clamped] !== selected) {
+      lastSelected.current = items[clamped];
       onSelect(items[clamped]);
     }
   }, [items, selected, onSelect]);
@@ -51,6 +65,7 @@ const DrumColumn: React.FC<{
   const onMouseDown = (e: React.MouseEvent) => {
     const el = containerRef.current;
     if (!el) return;
+    el.style.scrollBehavior = 'auto'; // Instant response during mouse drag
     isDragging.current = true;
     startY.current = e.clientY;
     startScrollTop.current = el.scrollTop;
@@ -59,11 +74,30 @@ const DrumColumn: React.FC<{
   const onMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging.current || !containerRef.current) return;
     const dy = startY.current - e.clientY;
-    containerRef.current.scrollTop = startScrollTop.current + dy;
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+    }
+    rafId.current = requestAnimationFrame(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTop = startScrollTop.current + dy;
+      }
+    });
   }, []);
   const onMouseUp = useCallback(() => {
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+    }
+    if (!isDragging.current) return;
     isDragging.current = false;
-  }, []);
+    const el = containerRef.current;
+    if (!el) return;
+    
+    // Enable smooth snapping transition
+    el.style.scrollBehavior = 'smooth';
+    const idx = Math.round(el.scrollTop / ITEM_H);
+    const clamped = Math.max(0, Math.min(items.length - 1, idx));
+    el.scrollTop = clamped * ITEM_H;
+  }, [items]);
 
   useEffect(() => {
     window.addEventListener('mousemove', onMouseMove);
@@ -71,21 +105,25 @@ const DrumColumn: React.FC<{
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+      }
     };
   }, [onMouseMove, onMouseUp]);
 
   return (
-    <div className="flex flex-col items-center select-none" style={{ width: 100 }}>
+    <div className="flex flex-col items-center select-none" style={{ width: 120 }}>
       <div
         ref={containerRef}
         onScroll={handleScroll}
         onMouseDown={onMouseDown}
-        className="overflow-y-scroll relative cursor-grab active:cursor-grabbing"
+        className="w-full overflow-y-scroll relative cursor-grab active:cursor-grabbing"
         style={{
           height: ITEM_H * VISIBLE,
           scrollbarWidth: 'none',
           WebkitOverflowScrolling: 'touch',
           scrollSnapType: 'y mandatory',
+          scrollBehavior: 'smooth',
         }}
       >
         {/* top padding phantom rows */}
@@ -96,9 +134,15 @@ const DrumColumn: React.FC<{
           <div
             key={val}
             onClick={() => {
+              lastSelected.current = val;
               onSelect(val);
               const el = containerRef.current;
-              if (el) el.scrollTop = items.indexOf(val) * ITEM_H;
+              if (el) {
+                el.scrollTo({
+                  top: items.indexOf(val) * ITEM_H,
+                  behavior: 'smooth'
+                });
+              }
             }}
             style={{ height: ITEM_H, scrollSnapAlign: 'center' }}
             className={clsx(
@@ -129,6 +173,28 @@ const TimerPickerModal: React.FC<TimerPickerModalProps> = ({ domain, initialMinu
 
   const [hours, setHours] = useState(initH);
   const [minutes, setMinutes] = useState(initM);
+
+  // Lock background scrolls completely except for the drum columns
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const preventScroll = (e: WheelEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.overflow-y-scroll')) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', preventScroll, { passive: false });
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('wheel', preventScroll);
+      window.removeEventListener('touchmove', preventScroll);
+    };
+  }, []);
 
   const total = hours * 60 + minutes;
   const isGlobal = domain === null;

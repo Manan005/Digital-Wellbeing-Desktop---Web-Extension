@@ -1,7 +1,7 @@
-# Graph Report - Chrome Extension Digital wellbeing  (2026-07-23)
+# Graph Report - Chrome Extension Digital wellbeing  (2026-07-25)
 
 ## Corpus Check
-- 16 files · ~5,095 words
+- 16 files · ~5,688 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c4c2cb87`
+- Built from commit: `a31e921b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
