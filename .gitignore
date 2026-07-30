@@ -5,8 +5,7 @@ node_modules/
 *.crx
 *.pem
 
-# Directory folder
-/dist/
+
 
 # Environment variables
 .env
