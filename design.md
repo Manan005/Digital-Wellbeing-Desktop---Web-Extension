@@ -6,32 +6,32 @@ This document outlines the visual system, user experience philosophy, typography
 
 ## 🎨 Theme & Color Palettes
 
-The extension utilizes four distinct theme environments to establish clear visual context depending on where the user is interacting:
+The extension UI (popup, full dashboard and the insights chat) shares one **light** and one **dark** theme. The user picks *System / Light / Dark* in the dashboard's Appearance card (default: follow the OS) or flips it with the sun/moon button in the popup header; the choice is stored in `settings.theme`. The in-page notch and blocker keep their own fixed dark styling (sections 3 and 4).
 
-### 1. Full Dashboard (Tab View)
-*Light, clean, clinical aesthetic matching Android 14's Digital Wellbeing details page.*
+### Semantic colour tokens
+Colours are never written as Tailwind palette classes in components. Every colour is a **semantic token** defined once in `src/index.css` as an RGB triplet — light values on `:root`, dark values on `:root[data-theme="dark"]` — and exposed by `tailwind.config.js` as `bg-<token>` / `text-<token>` / `border-<token>` (opacity modifiers work: `bg-overlay/50`). `src/main.tsx` applies the cached theme to `<html data-theme>` before the first paint, so neither view flashes.
 
-| Element | Color Role / Description | Hex / Tailwind |
-| :--- | :--- | :--- |
-| **Canvas Background** | Ultra-soft blue-grey background | `#f6f8ff` |
-| **Containers / Cards** | Clean white background with subtle border | `#ffffff` |
-| **Borders** | Minimal contrast border dividers | `#f1f5f9` (`slate-100`) |
-| **Primary Text** | Deep slate for high-readability headers | `#1e293b` (`slate-800`) |
-| **Secondary Text** | Medium slate for labels, helper texts | `#64748b` (`slate-500`) |
-| **Accent Primary** | Indigo-blue for selected days, primary tabs | `#4f46e5` (`indigo-600`) |
-| **Accent Soft** | Light indigo wash for active badges and fills | `#eef2ff` (`indigo-50`) |
-| **Alert / Warning** | Crimson-rose for deleted elements or time-limits | `#e11d48` (`rose-600`) |
+| Token | Role | Light | Dark |
+| :--- | :--- | :--- | :--- |
+| `canvas` | Page background | `#f6f8ff` | `#030712` (`gray-950`) |
+| `card` / `card-hover` | Cards, bubbles, header / hover | `#ffffff` / `slate-50` | `gray-900` / `gray-800` |
+| `subtle` / `subtle-2` | Picker band, toggle-off track, disabled | `slate-100` / `slate-200` | `gray-800` / `gray-700` |
+| `tile` | Favicon well | `#f8f9ff` | `gray-800` |
+| `line` / `line-strong` | Borders | `slate-100` / `slate-200` | `gray-800` / `gray-700` |
+| `ink` / `ink-2` / `ink-3` / `ink-4` | Primary → most muted text | `slate-800` / `600` / `400` / `300` | `slate-100` / `slate-300` / `gray-400` / `gray-600` |
+| `ink-inverse` | Text on accent and tooltip | `#ffffff` | `#030712` |
+| `accent` / `accent-hover` | Selected bar/pill, buttons, accent text | `indigo-600` / `700` | `indigo-400` / `300` |
+| `accent-soft` / `accent-line` / `accent-idle` | Washes, accent borders, idle chart bar | `indigo-50` / `100` / `100` | `indigo-950` / `900` / `900` |
+| `tooltip` | Chart tooltip (inverts) | `slate-800` | `slate-100` |
+| `overlay` | Backdrops (`/25` chat, `/50` modal) | `slate-900` | `#000000` |
+| `danger` / `danger-soft` / `danger-line` | Time-limit states | `rose-600` / `50` / `100` | `rose-400` / `950` / `900` |
+| `success` | On-device AI status dot | `emerald-500` | `emerald-400` |
+
+### 1. Full Dashboard (Tab View) — light
+*Light, clean, clinical aesthetic matching Android 14's Digital Wellbeing details page.* Uses the light column above: `#f6f8ff` canvas, white cards with `slate-100` borders, `slate-800` headings, `indigo-600` accents, rose for limits.
 
 ### 2. Compact Popup View
-*Dark, high-contrast dashboard card layout designed to fit seamlessly with default browser interfaces.*
-
-| Element | Color Role / Description | Hex / Tailwind |
-| :--- | :--- | :--- |
-| **Canvas Background** | Deep midnight grey | `#030712` (`gray-950`) |
-| **Containers / Cards** | Semi-translucent dark grey fill | `rgba(17, 24, 39, 0.6)` |
-| **Borders / Dividers**| Thin charcoal lines | `#1f2937` (`gray-800`) |
-| **Primary Text** | Off-white high-contrast typography | `#f1f5f9` (`slate-100`) |
-| **Accent Text** | Luminous indigo for times and totals | `#818cf8` (`indigo-400`) |
+The popup uses the **same tokens and theme setting** as the dashboard (it is the same React bundle, laid out for 360×480). In dark mode it renders the palette this section originally specified: `#030712` canvas, `gray-900` cards, `#1f2937` borders, `#f1f5f9` text and luminous `#818cf8` accents.
 
 ### 3. Dynamic Island Notch Alert
 *Deep forest green notification pill sliding down to announce screen-time thresholds, designed to look intentional and native.*
@@ -98,21 +98,31 @@ A key visual anchor of the dashboard, styled to resemble the native Android bar 
     *   Clicking a bar transitions the dashboard view state to that calendar day.
 *   **Scaling System:** Scales heights dynamically. The highest screen-time duration within the 7-day range becomes the chart's 100% height limit, with intermediate gridlines dynamically marked accordingly.
 
-### 2. Drum-Roll Scroll Wheel Picker
-A tactile selector used when setting app time limits or global daily goals.
+### 2. Timer dialog with drum-roll wheel picker
+Used for per-site daily limits and the global daily goal. The wheel is the one bold element; everything around it stays quiet.
 ```
-         ┌─────────────────────────┐
-         │         00  00          │
-         │         01  05          │
-      ───┼─────────────────────────┼─── Selection Highlight Band
-         │   [ 02 ]  [ 15 ] mins   │
-      ───┼─────────────────────────┼───
-         │         03  20          │
-         │         04  25          │
-         └─────────────────────────┘
+  ┌────────────────────────────────────────┐
+  │ [⏱]  Daily limit for github.com        │  icon tile (accent-soft) + title
+  │       Resets every day at midnight.    │  helper (ink-3)
+  │  ┌──────────────────────────────────┐  │
+  │  │          22            13        │  │  rows fade out towards the edges
+  │  │          23            14        │  │
+  │  │ ▌   01  hr    :    15  min     ▐ │  │  band: accent-soft fill, accent-line border
+  │  │          02            16        │  │  units live inside the band
+  │  │          03            17        │  │
+  │  └──────────────────────────────────┘  │  recessed well: canvas on card, line border
+  │     (15 min) (30 min) (1 hr) (2 hr)    │  quick picks (aria-pressed chips)
+  │     Or type  [ 1 ] hr  [ 15 ] min       │  typed entry, same state as the wheel
+  ├────────────────────────────────────────┤
+  │ [🗑 Remove]        Cancel  [Set 1 hr 15 min] │  primary button states the outcome
+  └────────────────────────────────────────┘
 ```
-*   **Aesthetics:** Transparent tumbler container overlaying a centered light-grey highlight band (`bg-slate-100`). Selected index enlarges to `text-2xl font-bold` and transitions surrounding items down to a lighter grey opacity.
-*   **Interaction:** Supports mouse dragging, touch flicking, scroll wheel increments, and individual index clicking. Standardized using CSS scroll-snapping (`scroll-snap-type: y mandatory`) to ensure perfect vertical center alignments on drag-release.
+*   **Wheel:** hours 0–23 and minutes 0–59 in 1-minute steps, `tabular-nums`; the selected row is `text-ink` 28px semibold, neighbours `text-ink-3`. A CSS mask (`transparent → black 32% … 68% → transparent`) fades the top and bottom rows so the empty rows before "00" read as the wheel's edge.
+*   **Band:** `bg-accent-soft` with `border-accent-line`, spanning both drums inside the well; the unit labels ("hr", "min") sit in the band to the right of the digits.
+*   **Quick picks:** 15 min / 30 min / 1 hr / 2 hr for sites, 1–4 hr for the daily goal. The chip matching the current value is highlighted.
+*   **Typed entry:** two number inputs (hours, minutes) bound to the same state; the wheel scrolls to match.
+*   **Actions:** "Remove" (danger, only when a limit exists), "Cancel", and a filled `bg-accent` primary button labelled with the result ("Set 1 hr 15 min"), disabled at 00:00 with a one-line hint underneath.
+*   **Interaction:** mouse dragging, touch flicking, scroll wheel, row clicking, Escape and backdrop click to close; `scroll-snap-type: y mandatory` keeps rows centred on release. The scale-in animation is skipped under `prefers-reduced-motion`.
 
 ---
 

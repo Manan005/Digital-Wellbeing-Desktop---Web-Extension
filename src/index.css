@@ -2,20 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Semantic colour tokens (RGB triplets so Tailwind can add an alpha channel).
+ * Light values match the original design exactly; dark values follow the
+ * "Compact Popup View" palette in design.md. Tailwind exposes each token as
+ * bg-<name> / text-<name> / border-<name> (see tailwind.config.js).
+ */
 :root {
   --font-sans: 'DM Sans', 'Google Sans', system-ui, sans-serif;
   font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
 
+  --c-canvas: 246 248 255;      /* #f6f8ff */
+  --c-card: 255 255 255;
+  --c-card-hover: 248 250 252;  /* slate-50 */
+  --c-subtle: 241 245 249;      /* slate-100 */
+  --c-subtle-2: 226 232 240;    /* slate-200 */
+  --c-tile: 248 249 255;        /* #f8f9ff favicon well */
+  --c-line: 241 245 249;        /* slate-100 */
+  --c-line-strong: 226 232 240; /* slate-200 */
+  --c-ink: 30 41 59;            /* slate-800 */
+  --c-ink-2: 71 85 105;         /* slate-600 */
+  --c-ink-3: 148 163 184;       /* slate-400 */
+  --c-ink-4: 203 213 225;       /* slate-300 */
+  --c-ink-inverse: 255 255 255;
+  --c-accent: 79 70 229;        /* indigo-600 */
+  --c-accent-hover: 67 56 202;  /* indigo-700 */
+  --c-accent-soft: 238 242 255; /* indigo-50 */
+  --c-accent-line: 224 231 255; /* indigo-100 */
+  --c-accent-idle: 224 231 255; /* indigo-100 idle chart bar */
+  --c-tooltip: 30 41 59;        /* slate-800 */
+  --c-overlay: 15 23 42;        /* slate-900 */
+  --c-danger: 225 29 72;        /* rose-600 */
+  --c-danger-soft: 255 241 242; /* rose-50 */
+  --c-danger-line: 255 228 230; /* rose-100 */
+  --c-success: 16 185 129;      /* emerald-500 */
+
   color-scheme: light;
-  color: #1e293b;           /* slate-800 — matches light theme primary text */
-  background-color: #f6f8ff; /* same canvas as both popup & dashboard */
+  color: rgb(var(--c-ink));
+  background-color: rgb(var(--c-canvas));
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="dark"] {
+  --c-canvas: 3 7 18;           /* gray-950 #030712 */
+  --c-card: 17 24 39;           /* gray-900 */
+  --c-card-hover: 31 41 55;     /* gray-800 */
+  --c-subtle: 31 41 55;         /* gray-800 */
+  --c-subtle-2: 55 65 81;       /* gray-700 */
+  --c-tile: 31 41 55;           /* gray-800 */
+  --c-line: 31 41 55;           /* gray-800 #1f2937 */
+  --c-line-strong: 55 65 81;    /* gray-700 */
+  --c-ink: 241 245 249;         /* slate-100 #f1f5f9 */
+  --c-ink-2: 203 213 225;       /* slate-300 */
+  --c-ink-3: 156 163 175;       /* gray-400 */
+  --c-ink-4: 75 85 99;          /* gray-600 */
+  --c-ink-inverse: 3 7 18;      /* dark text on the luminous accent */
+  --c-accent: 129 140 248;      /* indigo-400 #818cf8 */
+  --c-accent-hover: 165 180 252;/* indigo-300 */
+  --c-accent-soft: 30 27 75;    /* indigo-950 */
+  --c-accent-line: 49 46 129;   /* indigo-900 */
+  --c-accent-idle: 49 46 129;   /* indigo-900 */
+  --c-tooltip: 241 245 249;     /* slate-100 (inverted) */
+  --c-overlay: 0 0 0;
+  --c-danger: 251 113 133;      /* rose-400 */
+  --c-danger-soft: 76 5 25;     /* rose-950 */
+  --c-danger-line: 136 19 55;   /* rose-900 */
+  --c-success: 52 211 153;      /* emerald-400 */
+
+  color-scheme: dark;
+}
+
+/* Before main.tsx applies the saved theme, an OS in dark mode shows a dark canvas
+   rather than a light flash (explicit-light users see at most one empty dark frame). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --c-canvas: 3 7 18;
+    --c-ink: 241 245 249;
+  }
 }
 
 body {
@@ -31,7 +101,7 @@ body {
     overflow: hidden;
     margin: 0;
     padding: 0;
-    background-color: #f6f8ff; /* Edge-to-edge light canvas background */
+    background-color: rgb(var(--c-canvas)); /* Edge-to-edge canvas background */
     box-sizing: border-box;
   }
   body * {
@@ -43,7 +113,7 @@ body {
   body {
     min-width: 320px;
     width: 100%;
-    background-color: #f6f8ff; /* Soft blue-grey background for full dashboard view */
+    background-color: rgb(var(--c-canvas)); /* Full dashboard canvas */
   }
 }
 
@@ -62,9 +132,9 @@ body {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1; /* slate-300 */
+  background: rgb(var(--c-ink-4));
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; /* slate-400 */
+  background: rgb(var(--c-ink-3));
 }

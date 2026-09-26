@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Monitor and manage your screen time.",
   "permissions": ["storage", "tabs", "activeTab", "scripting", "favicon"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
   "action": {
     "default_popup": "index.html"
   },

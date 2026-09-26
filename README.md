@@ -17,13 +17,20 @@ A beautiful, responsive, and feature-rich browser extension inspired by Android'
 
 ---
 
-## 🛠️ Changes in progress
+## 💬 Insights Chat (ask questions about your usage)
 
-This extension utilizes Chrome's native **Prompt API** (stable for extensions as of Chrome 138) to act as a local Retrieval-Augmented Generation (RAG) agent. 
+Open the full dashboard and click **Ask** to chat with your own data: *"average time on youtube this week"*, *"how many times did I open github in the past 7 days"*, *"least used site"*, *"when do I browse the most"*, *"compare this week vs last week"*, *"did I stay under my goal"*. Short follow-ups work too (*"and yesterday?"*, *"what about reddit?"*).
 
-* **Zero Cloud Costs & Privacy First:** All AI inference runs entirely on your device using the Gemini Nano model. Your sensitive screen-time data and browsing habits never leave your computer.
-* **The RAG Pipeline:** The extension retrieves your weekly usage JSON from `chrome.storage.local` and feeds it directly into a local session via `LanguageModel.create()`.
-* **Actionable Insights:** The AI acts as a personalized productivity coach. It analyzes your context to identify trends and provides custom insights, such as: *"You spent an extra 45 minutes on LeetCode solving problems in C and Java today, but your scrolling time on social media also spiked. Let's lock in for tomorrow!"*
+* **Numbers come from code, never from a model.** A question is turned into a structured query (site, period, metric), `src/utils/stats.ts` computes the exact answer from `chrome.storage.local`, and a template phrases it. Answers can include a small bar chart.
+* **Zero cost, works offline, nothing leaves your device.** Understanding runs on-device in three tiers: a keyword parser (instant), Chrome's built-in Gemini Nano when the machine supports it, and a small sentence-embedding model (`all-MiniLM-L6-v2`, ~23 MB, downloaded once on first use and cached by the browser, CPU only). The only network request the chat ever makes is that one-time model download.
+* **Session log.** Besides daily totals, the background worker now records visits as `sessions:YYYY-MM-DD` tuples (`[domain, start, seconds]`), which powers time-of-day, longest-session and accurate visit-count answers. Sessions are kept for 90 days, daily totals for 365.
+* **Scope.** The extension only sees browser tabs, so questions about desktop apps or your phone get a polite "I can't see that".
+
+To refresh the classifier after editing the example phrasings in `src/chat/intents.ts`, run `npx tsx scripts/build-intent-embeddings.ts` (it also prints accuracy on a held-out question set).
+
+## 🌗 Light & dark theme
+
+The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in the dashboard's *Appearance* card (default follows your OS), or use the sun/moon button in the popup. Colours are semantic tokens (see `design.md`), applied before first paint so nothing flashes.
 
 ---
 
@@ -31,6 +38,8 @@ This extension utilizes Chrome's native **Prompt API** (stable for extensions as
 
 * **Frontend:** React 18, TypeScript, Tailwind CSS 3
 * **Icons:** Lucide React
+* **On-device AI:** `@huggingface/transformers` (ONNX Runtime Web, WASM/CPU) for the chat's sentence-embedding classifier, plus Chrome's Prompt API (Gemini Nano) where available
+* **Tests:** Vitest (`npm test`)
 * **Build System:** Vite 5, PostCSS, Autoprefixer
 * **Extension Platform:** Web Extension Manifest V3 (compatible with Chrome, Edge, Brave, Opera, etc.), Background Service Workers, and injected Content Scripts
 

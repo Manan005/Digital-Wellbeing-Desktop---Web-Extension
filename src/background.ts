@@ -4,26 +4,25 @@
  * Groups tracking metrics by local calendar date (YYYY-MM-DD).
  */
 
-interface DomainMetrics {
-  timeSpentSeconds: number;
-  timesOpened: number;
-}
-
-interface SiteSettings {
-  dailyLimit: number | null; // in seconds
-  periodicAlerts: boolean;
-}
+import type { DomainMetrics, SiteSettings, SessionTuple } from './utils/storage';
+import {
+  getLocalDateStr,
+  sessionKey,
+  appendHeartbeat,
+  findExpiredKeys,
+} from './utils/storage';
 
 let activeDomain: string | null = null;
 let lastActiveDomain: string | null = null;
+let lastPrunedDate: string | null = null;
 
-// Helper to get local date string YYYY-MM-DD
-const getLocalDateStr = (): string => {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+// Serialises storage read-modify-write cycles so concurrent increments
+// (heartbeat + tab switch) can't overwrite each other's writes.
+let writeChain: Promise<unknown> = Promise.resolve();
+const enqueueWrite = <T>(fn: () => Promise<T>): Promise<T> => {
+  const next = writeChain.then(fn, fn);
+  writeChain = next.catch(() => {});
+  return next;
 };
 
 // Helper to get domain name stripped of www. and subpages
@@ -65,30 +64,54 @@ const updateActiveTab = async () => {
   activeDomain = null;
 };
 
-// Helper to increment timesOpened for a domain
-const incrementTimesOpened = async (domain: string) => {
-  const dateKey = getLocalDateStr();
-  const result = await chrome.storage.local.get(dateKey);
-  const dayData = result[dateKey] || {};
-  const metrics: DomainMetrics = dayData[domain] || { timeSpentSeconds: 0, timesOpened: 0 };
-  
-  metrics.timesOpened += 1;
-  dayData[domain] = metrics;
-  
-  await chrome.storage.local.set({ [dateKey]: dayData });
+// Delete daily totals / session logs past their retention window (once per day)
+const pruneOldData = async () => {
+  const today = getLocalDateStr();
+  if (lastPrunedDate === today) return;
+  lastPrunedDate = today;
+  try {
+    const allData = await chrome.storage.local.get(null);
+    const expired = findExpiredKeys(Object.keys(allData), today);
+    if (expired.length > 0) {
+      await chrome.storage.local.remove(expired);
+    }
+  } catch (err) {
+    console.error('Failed to prune old data:', err);
+  }
 };
 
-// Helper to increment timeSpentSeconds for active domain
-const incrementTimeSpent = async (domain: string) => {
+// Helper to increment timesOpened for a domain
+const incrementTimesOpened = (domain: string) => enqueueWrite(async () => {
   const dateKey = getLocalDateStr();
   const result = await chrome.storage.local.get(dateKey);
   const dayData = result[dateKey] || {};
   const metrics: DomainMetrics = dayData[domain] || { timeSpentSeconds: 0, timesOpened: 0 };
-  
-  metrics.timeSpentSeconds += 1;
+
+  metrics.timesOpened += 1;
   dayData[domain] = metrics;
-  
+
   await chrome.storage.local.set({ [dateKey]: dayData });
+});
+
+// Helper to increment timeSpentSeconds for active domain and log the session
+const incrementTimeSpent = async (domain: string) => {
+  const dateKey = getLocalDateStr();
+  if (lastPrunedDate !== dateKey) pruneOldData();
+
+  const metrics = await enqueueWrite(async () => {
+    const sessKey = sessionKey(dateKey);
+    const result = await chrome.storage.local.get([dateKey, sessKey]);
+    const dayData = result[dateKey] || {};
+    const metrics: DomainMetrics = dayData[domain] || { timeSpentSeconds: 0, timesOpened: 0 };
+    const sessions: SessionTuple[] = Array.isArray(result[sessKey]) ? result[sessKey] : [];
+
+    metrics.timeSpentSeconds += 1;
+    dayData[domain] = metrics;
+    appendHeartbeat(sessions, domain, Math.floor(Date.now() / 1000));
+
+    await chrome.storage.local.set({ [dateKey]: dayData, [sessKey]: sessions });
+    return metrics;
+  });
 
   // Load site settings for daily limit & global alerts checking
   const storage = await chrome.storage.local.get(['siteSettings', 'settings', 'dailyGoal', 'periodicAlerts']);
@@ -161,7 +184,9 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
   if (windowId === chrome.windows.WINDOW_ID_NONE) {
+    // Chrome lost focus: coming back to the same site counts as a new open
     activeDomain = null;
+    lastActiveDomain = null;
   } else {
     await updateActiveTab();
     if (activeDomain && activeDomain !== lastActiveDomain) {
@@ -257,8 +282,8 @@ const migrateOldStorageSchema = async () => {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
     for (const [key, val] of Object.entries(allData)) {
-      // Skip settings, siteSettings, lastTrackedDate, and YYYY-MM-DD keys
-      if (key === 'settings' || key === 'siteSettings' || datePattern.test(key) || key === 'lastTrackedDate') {
+      // Skip settings, siteSettings, lastTrackedDate, YYYY-MM-DD and sessions:* keys
+      if (key === 'settings' || key === 'siteSettings' || datePattern.test(key) || key === 'lastTrackedDate' || key.startsWith('sessions:')) {
         continue;
       }
 
@@ -322,6 +347,7 @@ const migrateOldStorageSchema = async () => {
 // Initialize on service worker wakeup
 const initialize = async () => {
   await migrateOldStorageSchema();
+  await pruneOldData();
   await updateActiveTab();
   lastActiveDomain = activeDomain;
 };

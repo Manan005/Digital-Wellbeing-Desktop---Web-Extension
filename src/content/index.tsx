@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './content.css';
 import { getFaviconUrl } from '../utils/favicon';
+import { getLocalDateStr } from '../utils/storage';
 
 const ContentApp: React.FC = () => {
   const [showNotch, setShowNotch] = useState(false);
@@ -18,12 +19,7 @@ const ContentApp: React.FC = () => {
       }
       if (!hostname) return;
 
-      const d = new Date();
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const dateKey = `${year}-${month}-${day}`;
-
+      const dateKey = getLocalDateStr();
       const storage = await chrome.storage.local.get([dateKey, 'siteSettings']);
       const dayData = storage[dateKey] || {};
       const metrics = dayData[hostname] || { timeSpentSeconds: 0 };
