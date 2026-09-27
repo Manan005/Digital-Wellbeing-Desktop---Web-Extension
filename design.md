@@ -16,7 +16,7 @@ Colours are never written as Tailwind palette classes in components. Every colou
 | `canvas` | Page background | `#f6f8ff` | `#030712` (`gray-950`) |
 | `card` / `card-hover` | Cards, bubbles, header / hover | `#ffffff` / `slate-50` | `gray-900` / `gray-800` |
 | `subtle` / `subtle-2` | Picker band, toggle-off track, disabled | `slate-100` / `slate-200` | `gray-800` / `gray-700` |
-| `tile` | Favicon well | `#f8f9ff` | `gray-800` |
+| `tile` | Favicon well (stays light so dark logos remain visible) | `#f8f9ff` | `slate-200` |
 | `line` / `line-strong` | Borders | `slate-100` / `slate-200` | `gray-800` / `gray-700` |
 | `ink` / `ink-2` / `ink-3` / `ink-4` | Primary → most muted text | `slate-800` / `600` / `400` / `300` | `slate-100` / `slate-300` / `gray-400` / `gray-600` |
 | `ink-inverse` | Text on accent and tooltip | `#ffffff` | `#030712` |

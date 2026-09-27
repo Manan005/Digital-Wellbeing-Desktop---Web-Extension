@@ -55,7 +55,7 @@
   --c-card-hover: 31 41 55;     /* gray-800 */
   --c-subtle: 31 41 55;         /* gray-800 */
   --c-subtle-2: 55 65 81;       /* gray-700 */
-  --c-tile: 31 41 55;           /* gray-800 */
+  --c-tile: 226 232 240;        /* slate-200: favicons stay on a light well so dark logos remain visible */
   --c-line: 31 41 55;           /* gray-800 #1f2937 */
   --c-line-strong: 55 65 81;    /* gray-700 */
   --c-ink: 241 245 249;         /* slate-100 #f1f5f9 */

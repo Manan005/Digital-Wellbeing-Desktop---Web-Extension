@@ -2,6 +2,21 @@
 
 A beautiful, responsive, and feature-rich browser extension inspired by Android's Digital Wellbeing. It helps you monitor your daily screen time, manage website usage, and stay productive through custom daily limits and periodic alerts.
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/dashboard-light.png" alt="Full dashboard in the light theme: 7-day bar chart, usage by app, settings" width="49%">
+  <img src="docs/screenshots/dashboard-dark.png" alt="Full dashboard in the dark theme" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/chat-light.png" alt="Insights chat answering questions about screen time, with a per-hour bar chart" width="98%">
+</p>
+
+| Popup (light) | Popup (dark) | Timer dialog | Chat (dark) |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/popup-light.png" width="220" alt="Toolbar popup, light theme"> | <img src="docs/screenshots/popup-dark.png" width="220" alt="Toolbar popup, dark theme"> | <img src="docs/screenshots/timer-dialog-dark.png" width="230" alt="Timer dialog with wheel picker, quick picks and typed entry"> | <img src="docs/screenshots/chat-panel-dark.png" width="230" alt="Insights chat panel, dark theme"> |
+
 ---
 
 ## 🚀 Key Features
@@ -10,7 +25,9 @@ A beautiful, responsive, and feature-rich browser extension inspired by Android'
 * **Dual-Mode Visual Dashboard:**
   * **Compact Popup View:** Click the extension icon in the toolbar to see today's overall screen time and your top-used domains. Fits perfectly on a `360px` mobile layout.
   * **Full-Page Tab View:** Click the dashboard link to view a wide-screen details page containing a responsive 7-day custom bar graph, interactive date selection pills, and granular site settings.
-* **Custom App Limits & Site Blocking:** Set daily time limits in minutes for any website. Once your limit is reached, a custom warning overlay pauses the page and restricts access until the next day.
+* **Insights Chat:** Ask questions about your own usage in plain language ("least used site this week", "when do I browse the most") and get exact, on-device answers with small charts. See [Insights Chat](#-insights-chat-ask-questions-about-your-usage).
+* **Light & Dark Theme:** Follows your system or your pick, across the popup, dashboard and chat.
+* **Custom App Limits & Site Blocking:** Set daily time limits for any website with a wheel picker, quick picks or typed entry. Once your limit is reached, a custom warning overlay pauses the page and restricts access until the next day.
 * **Periodic Alert Notches:** An unobtrusive, animated drop-down notification slides into view every 5 minutes of continuous domain usage, keeping you conscious of your time.
 * **Reliable Date-Based Metrics:** Saves metrics grouped by local calendar date (`YYYY-MM-DD`), preventing system clock shifts from corrupting your tracking history. Includes an auto-migration script for legacy schemas.
 * **Local Developer Fallback:** Includes a full mock fallback for `chrome.storage` and `chrome.runtime` namespaces. Run the project in any standard browser to preview the interface with gorgeous pre-populated mock data.
