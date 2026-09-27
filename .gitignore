@@ -39,3 +39,7 @@ ehthumbs.db
 # TypeScript cache
 *.tsbuildinfo
 graphify-out/
+
+.gemini/
+.agents/
+
