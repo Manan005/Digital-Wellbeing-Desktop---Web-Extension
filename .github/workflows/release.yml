@@ -1,0 +1,56 @@
+# Builds the extension and attaches a ready-to-load zip to the GitHub Release
+# for the tag. Users download it, extract it, and "Load unpacked" the folder;
+# nobody has to build locally. The build output never goes into git.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re)build and attach the zip to, e.g. v1.0.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      FOLDER: digital-wellbeing-extension
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check the manifest version matches the tag
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          if [ "v$VERSION" != "$TAG" ]; then
+            echo "::error::manifest.json version is $VERSION but the tag is $TAG. Bump manifest.json or use tag v$VERSION."
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Zip the build with one top-level folder
+        run: |
+          cp -r dist "$FOLDER"
+          zip -r -q "$FOLDER.zip" "$FOLDER"
+          unzip -l "$FOLDER.zip" | head -20
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: ${{ env.FOLDER }}.zip
+          fail_on_unmatched_files: true

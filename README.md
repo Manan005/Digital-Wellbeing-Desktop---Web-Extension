@@ -62,17 +62,26 @@ The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in
 
 ---
 
-## 📦 Getting Started & Local Installation
+## ⬇️ Install (no build needed)
 
-Follow these steps to set up the project locally and add the extension to your browser.
+1. Download **`digital-wellbeing-extension.zip`** from the [latest release](https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension/releases/latest).
+2. Extract it. You get a folder named **`digital-wellbeing-extension`** with `manifest.json` inside.
+3. Open `chrome://extensions` (Edge: `edge://extensions`), turn on **Developer mode**, click **Load unpacked**, and select that `digital-wellbeing-extension` folder.
+4. Pin **Digital Wellbeing Tracker** from the puzzle-piece menu in the toolbar.
 
-> **Just want to try it?** Download `digital-wellbeing-chrome.zip` from the [Releases](https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension/releases) page, unzip it, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the unzipped folder. No build needed.
->
-> **Firefox** isn't supported yet; see [docs/firefox-plan.md](docs/firefox-plan.md).
+Keep the folder where it is: the browser loads the extension from it. To update, download the new zip, replace the folder, and click the reload icon on the extension's card.
+
+Works in Chrome, Edge, Brave, Opera and other Chromium browsers. **Firefox** isn't supported yet; see [docs/firefox-plan.md](docs/firefox-plan.md).
+
+---
+
+## 📦 Build from Source
+
+Follow these steps to build the extension yourself (for development, or to load your own changes).
 
 ### 1. Build the Extension Locally
 
-1. **Prerequisites:** Ensure you have [Node.js](https://nodejs.org/) (v16 or higher recommended) installed.
+1. **Prerequisites:** Ensure you have [Node.js](https://nodejs.org/) 20 or newer installed.
 2. **Clone the repository:**
    ```bash
    git clone https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension.git
@@ -111,6 +120,18 @@ Once the `dist/` folder is generated, load it into your preferred web browser:
 If you modify any source files (in `src/`):
 1. Run `npm run build` again to recompile the changes.
 2. Go back to your browser's extensions page and click the **Reload icon** (circular arrow button) on the **Digital Wellbeing Tracker** extension card.
+
+---
+
+### 4. Publishing a Release
+
+Releases are built by GitHub Actions ([.github/workflows/release.yml](.github/workflows/release.yml)); the `dist/` folder is never committed.
+
+1. Bump `"version"` in `manifest.json` (for example to `1.1.0`) and commit.
+2. Push a matching tag: `git tag v1.1.0 && git push origin v1.1.0`.
+3. The workflow runs the tests, builds, and attaches `digital-wellbeing-extension.zip` to the `v1.1.0` release (creating it if needed). It stops with an error if the tag and the manifest version don't match.
+
+To rebuild the zip for an existing tag, open **Actions → Release → Run workflow** and enter the tag.
 
 ---
 
