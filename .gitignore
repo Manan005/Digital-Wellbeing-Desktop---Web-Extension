@@ -45,6 +45,7 @@ ehthumbs.db
 
 # Local AI tooling
 .gemini/
+.agent/
 .agents/
 GEMINI.md
 graphify-out/
