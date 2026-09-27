@@ -58,7 +58,26 @@ The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in
 * **On-device AI:** `@huggingface/transformers` (ONNX Runtime Web, WASM/CPU) for the chat's sentence-embedding classifier, plus Chrome's Prompt API (Gemini Nano) where available
 * **Tests:** Vitest (`npm test`)
 * **Build System:** Vite 5, PostCSS, Autoprefixer
-* **Extension Platform:** Web Extension Manifest V3 (compatible with Chrome, Edge, Brave, Opera, etc.), Background Service Workers, and injected Content Scripts
+* **Extension Platform:** Web Extension Manifest V3 for Chromium browsers (background service worker) and Firefox (background event page, built by `npm run build:firefox`), with injected content scripts
+
+---
+
+## 🌐 Browser Compatibility
+
+| Browser | Supported | Install from | Notes |
+| :--- | :---: | :--- | :--- |
+| Google Chrome | ✅ | `digital-wellbeing-extension.zip` or `dist/` | Load unpacked in Developer mode |
+| Microsoft Edge | ✅ | same | `edge://extensions` |
+| Brave, Opera, Vivaldi | ✅ | same | Any Chromium browser |
+| Firefox 142+ | ✅ | `digital-wellbeing-firefox.zip` or `dist-firefox/` | Temporary add-on until published on addons.mozilla.org; tested on Firefox 156 |
+| Safari | ❌ | — | Not supported |
+
+Everything works the same across browsers (tracking, daily limits, the 5-minute notch, dashboard, themes and the insights chat), with two differences in Firefox:
+
+- **Gemini Nano** is a Chrome feature, so the chat uses its keyword parser and the on-device sentence model there. Answers are the same; only unusual wording may be understood a little less often.
+- **Site icons** come from Google's favicon service, because Firefox has no equivalent of Chrome's built-in favicon API.
+
+The extension only sees websites in the browser it's installed in. Desktop apps and other browsers aren't tracked.
 
 ---
 
@@ -120,13 +139,17 @@ Once the `dist/` folder is generated, load it into your preferred web browser:
 5. Select the **`dist`** folder in your project directory.
 6. Pin the **Digital Wellbeing Tracker** to your toolbar for quick access (via the extensions puzzle piece icon in your toolbar).
 
+**Firefox:** run `npm run build:firefox` instead. It writes a `dist-firefox/` folder. Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `dist-firefox/manifest.json`. Don't pick `dist/manifest.json`; Firefox rejects it with "background.service_worker is currently disabled".
+
 ---
 
 ### 3. Applying Code Updates
 
 If you modify any source files (in `src/`):
-1. Run `npm run build` again to recompile the changes.
-2. Go back to your browser's extensions page and click the **Reload icon** (circular arrow button) on the **Digital Wellbeing Tracker** extension card.
+1. Run `npm run build` again to recompile the changes (`npm run build:firefox` for Firefox).
+2. Go back to your browser's extensions page and click the **Reload icon** (circular arrow button) on the **Digital Wellbeing Tracker** extension card. In Firefox, click **Reload** next to the add-on in `about:debugging`.
+
+Always reload after rebuilding. Each build gives the script files new names, so a browser still running the previous build can no longer inject the tracking script. New tabs then stop being tracked while the dashboard itself keeps working.
 
 ---
 
@@ -137,8 +160,6 @@ Releases are built by GitHub Actions ([.github/workflows/release.yml](.github/wo
 1. Bump `"version"` in `manifest.json` (for example to `1.1.0`) and commit.
 2. Push a matching tag: `git tag v1.1.0 && git push origin v1.1.0`.
 3. The workflow runs the tests, builds, and attaches `digital-wellbeing-extension.zip` (Chromium browsers) and `digital-wellbeing-firefox.zip` to the `v1.1.0` release (creating it if needed). It stops with an error if the tag and the manifest version don't match.
-
-To build the Firefox package locally, run `npm run build:firefox`; it writes `dist-firefox/` (load its `manifest.json` in `about:debugging`).
 
 To rebuild the zip for an existing tag, open **Actions → Release → Run workflow** and enter the tag.
 
