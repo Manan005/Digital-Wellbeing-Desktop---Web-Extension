@@ -66,6 +66,10 @@ The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in
 
 Follow these steps to set up the project locally and add the extension to your browser.
 
+> **Just want to try it?** Download `digital-wellbeing-chrome.zip` from the [Releases](https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension/releases) page, unzip it, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the unzipped folder. No build needed.
+>
+> **Firefox** isn't supported yet; see [docs/firefox-plan.md](docs/firefox-plan.md).
+
 ### 1. Build the Extension Locally
 
 1. **Prerequisites:** Ensure you have [Node.js](https://nodejs.org/) (v16 or higher recommended) installed.
