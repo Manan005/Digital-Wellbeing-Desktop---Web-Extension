@@ -93,8 +93,16 @@ const incrementTimesOpened = (domain: string) => enqueueWrite(async () => {
   await chrome.storage.local.set({ [dateKey]: dayData });
 });
 
+// The tab showing `domain`: the heartbeat's own tab when known, otherwise the
+// active tab of the last focused window (a service worker has no "current" window).
+const findTabFor = async (domain: string, tabId?: number): Promise<number | null> => {
+  if (tabId !== undefined) return tabId;
+  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  return tab?.id && tab.url && getDomain(tab.url) === domain ? tab.id : null;
+};
+
 // Helper to increment timeSpentSeconds for active domain and log the session
-const incrementTimeSpent = async (domain: string) => {
+const incrementTimeSpent = async (domain: string, tabId?: number) => {
   const dateKey = getLocalDateStr();
   if (lastPrunedDate !== dateKey) pruneOldData();
 
@@ -126,21 +134,21 @@ const incrementTimeSpent = async (domain: string) => {
   // 5-minute periodic alert logic
   const isAlertEnabled = siteConfig.periodicAlerts && globalSettings.periodicAlerts;
   if (isAlertEnabled && metrics.timeSpentSeconds > 0 && metrics.timeSpentSeconds % 300 === 0) {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id && tab.url && getDomain(tab.url) === domain) {
-      chrome.tabs.sendMessage(tab.id, {
+    const target = await findTabFor(domain, tabId);
+    if (target !== null) {
+      chrome.tabs.sendMessage(target, {
         type: 'SHOW_NOTCH',
         minutes: Math.floor(metrics.timeSpentSeconds / 60),
         domain: domain
-      });
+      }).catch(() => {}); // e.g. the dashboard page, which has no content script
     }
   }
 
   // Daily limit enforcement logic
   if (siteConfig.dailyLimit !== null && metrics.timeSpentSeconds >= siteConfig.dailyLimit) {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id && tab.url && getDomain(tab.url) === domain) {
-      chrome.tabs.sendMessage(tab.id, { 
+    const target = await findTabFor(domain, tabId);
+    if (target !== null) {
+      chrome.tabs.sendMessage(target, {
         type: 'SHOW_BLOCKER',
         domain: domain
       }).catch(() => {});
@@ -252,7 +260,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       if (sender.tab?.id) {
         checkAndEnforceLimit(sender.tab.id, domain);
       }
-      incrementTimeSpent(domain);
+      incrementTimeSpent(domain, sender.tab?.id);
     }
   }
 });

@@ -1,13 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import './content.css';
 import { getFaviconUrl } from '../utils/favicon';
 import { getLocalDateStr } from '../utils/storage';
 
+const NOTCH_VISIBLE_MS = 4000;
+const NOTCH_EXIT_MS = 250;
+
+/** "15m", "1h", "1h 5m" — the way Android's Digital Wellbeing words it. */
+const formatUsed = (minutes: number): string => {
+  if (minutes < 60) return `${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+};
+
 const ContentApp: React.FC = () => {
   const [showNotch, setShowNotch] = useState(false);
+  const [notchLeaving, setNotchLeaving] = useState(false);
   const [notchMinutes, setNotchMinutes] = useState(0);
   const [notchDomain, setNotchDomain] = useState('');
+  const notchTimers = useRef<number[]>([]);
   const [showBlocker, setShowBlocker] = useState(false);
   const [blockedDomain, setBlockedDomain] = useState('');
 
@@ -40,10 +53,16 @@ const ContentApp: React.FC = () => {
   useEffect(() => {
     const listener = (message: any) => {
       if (message.type === 'SHOW_NOTCH') {
+        // A new alert restarts the timers instead of being cut short by the previous one
+        notchTimers.current.forEach(clearTimeout);
         setNotchMinutes(message.minutes);
         setNotchDomain(message.domain);
+        setNotchLeaving(false);
         setShowNotch(true);
-        setTimeout(() => setShowNotch(false), 4000);
+        notchTimers.current = [
+          window.setTimeout(() => setNotchLeaving(true), NOTCH_VISIBLE_MS),
+          window.setTimeout(() => setShowNotch(false), NOTCH_VISIBLE_MS + NOTCH_EXIT_MS),
+        ];
       }
       if (message.type === 'SHOW_BLOCKER') {
         setBlockedDomain(message.domain);
@@ -59,7 +78,10 @@ const ContentApp: React.FC = () => {
     checkLimitDirectly();
     chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
 
-    return () => chrome.runtime.onMessage.removeListener(listener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listener);
+      notchTimers.current.forEach(clearTimeout);
+    };
   }, []);
 
   // Real-time listener for siteSettings mutation (e.g. when timer deleted in dashboard)
@@ -87,22 +109,26 @@ const ContentApp: React.FC = () => {
   return (
     <div className="digital-wellbeing-wrapper">
       {showNotch && (
-        <div className="dw-notch-container">
-          <div 
+        <div
+          className={`dw-notch-container${notchLeaving ? ' dw-notch-container--leaving' : ''}`}
+          role="status"
+          aria-live="polite"
+        >
+          <div
             className="dw-notch"
             onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' }).catch(() => {})}
-            style={{ cursor: 'pointer' }}
+            title="Open Digital Wellbeing"
           >
-            <div className="dw-notch-icon">
-              <img 
-                src={getFaviconUrl(notchDomain)} 
-                alt={notchDomain} 
+            <span className="dw-notch-icon">
+              <img
+                src={getFaviconUrl(notchDomain)}
+                alt=""
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${notchDomain}&sz=64`;
                 }}
               />
-            </div>
-            <span className="dw-notch-text">Used for {notchMinutes}m</span>
+            </span>
+            <span className="dw-notch-text">Used for {formatUsed(notchMinutes)}</span>
           </div>
         </div>
       )}

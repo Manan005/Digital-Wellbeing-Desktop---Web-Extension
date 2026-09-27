@@ -33,15 +33,17 @@ Colours are never written as Tailwind palette classes in components. Every colou
 ### 2. Compact Popup View
 The popup uses the **same tokens and theme setting** as the dashboard (it is the same React bundle, laid out for 360×480). In dark mode it renders the palette this section originally specified: `#030712` canvas, `gray-900` cards, `#1f2937` borders, `#f1f5f9` text and luminous `#818cf8` accents.
 
-### 3. Dynamic Island Notch Alert
-*Deep forest green notification pill sliding down to announce screen-time thresholds, designed to look intentional and native.*
+### 3. Periodic-Alert Notch ("Used for 15m")
+*Modelled on Android Digital Wellbeing's usage pill (see `images/notch reference look.PNG`): a dark teal capsule that slides down at the top centre of the page every 5 minutes of active use on a site, stays 4 s, then slides back up. Clicking it opens the dashboard.*
 
-| Element | Color Role / Description | Hex / Tailwind |
+| Element | Description | Value |
 | :--- | :--- | :--- |
-| **Pill Background** | Forest Green | `#004d40` |
-| **Icon Background** | White opacity overlay | `rgba(255, 255, 255, 0.1)` |
-| **Text** | Clean white | `#ffffff` |
-| **Shadow** | Diffused float shadow | `rgba(0, 0, 0, 0.3)` |
+| **Pill** | Dark teal capsule, no border, 46px tall, padding `5px 20px 5px 5px` | `#0e5c68` (hover `#11697a`) |
+| **Logo** | Site favicon cropped to a 36px circle, flush with the pill's left edge | white backing `#ffffff` |
+| **Text** | "Used for 15m" / "Used for 1h 5m", 17px, weight 500, no wrap | `#ffffff` |
+| **Shadow** | Soft float shadow | `0 8px 24px rgba(0,0,0,.28)` |
+
+The notch is injected into the host page, so `content.css` resets inherited page rules (opacity, filters, margins, borders, line-height) on the notch and its wrappers.
 
 ### 4. App Blocker Screen
 *High z-index full-screen screen lockout featuring soft warning tones and Android Material-like dialogue.*
