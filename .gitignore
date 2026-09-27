@@ -43,3 +43,5 @@ graphify-out/
 .gemini/
 .agents/
 
+tui.heapsnapshot
+server.heapsnapshot
