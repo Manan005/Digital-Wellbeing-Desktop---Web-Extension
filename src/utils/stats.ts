@@ -14,6 +14,7 @@ import {
   addDays,
   dateStrsBetween,
   getLocalDateStr,
+  isExtensionUrl,
   parseDateStr,
   sessionKey,
 } from './storage';
@@ -92,7 +93,7 @@ export interface UsageDataset {
 
 /** Domains that are internal to the extension/browser and never count as usage. */
 export const isTrackableDomain = (domain: string): boolean =>
-  !domain.startsWith('chrome-extension://') && !domain.startsWith('chrome://') && domain.length > 0;
+  domain.length > 0 && !isExtensionUrl(domain) && !/^(chrome|about|edge|brave):/.test(domain);
 
 type StorageLike = { get: (keys: string[]) => Promise<Record<string, unknown>> };
 

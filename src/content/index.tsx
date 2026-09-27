@@ -6,6 +6,37 @@ import { getLocalDateStr } from '../utils/storage';
 
 const NOTCH_VISIBLE_MS = 4000;
 const NOTCH_EXIT_MS = 250;
+const ROOT_ID = 'digital-wellbeing-content-root';
+
+// This script can run more than once in a page: once from the manifest and again
+// when the background injects it into tabs that were open before an install or
+// update. Each copy tags the root with its own id; the newest copy replaces the
+// root, and older copies notice and shut down, so a tab never sends two heartbeats.
+const INSTANCE = Math.random().toString(36).slice(2);
+
+/** False once the extension has been reloaded or removed ("Extension context invalidated"). */
+const isAlive = (): boolean => {
+  try {
+    return Boolean(chrome.runtime?.id);
+  } catch {
+    return false;
+  }
+};
+
+let shutdown: () => void = () => {};
+
+/** sendMessage throws synchronously in an orphaned script, so .catch alone isn't enough. */
+const send = (message: Record<string, unknown>): void => {
+  if (!isAlive()) {
+    shutdown();
+    return;
+  }
+  try {
+    chrome.runtime.sendMessage(message).catch(() => {});
+  } catch {
+    shutdown();
+  }
+};
 
 /** "15m", "1h", "1h 5m" — the way Android's Digital Wellbeing words it. */
 const formatUsed = (minutes: number): string => {
@@ -76,10 +107,14 @@ const ContentApp: React.FC = () => {
     
     // Initial limit check on load
     checkLimitDirectly();
-    chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
+    send({ type: 'CHECK_LIMIT', domain: window.location.hostname });
 
     return () => {
-      chrome.runtime.onMessage.removeListener(listener);
+      try {
+        chrome.runtime.onMessage.removeListener(listener);
+      } catch {
+        // context already invalidated
+      }
       notchTimers.current.forEach(clearTimeout);
     };
   }, []);
@@ -88,22 +123,16 @@ const ContentApp: React.FC = () => {
   useEffect(() => {
     const storageListener = () => {
       checkLimitDirectly();
-      chrome.runtime.sendMessage({ type: 'CHECK_LIMIT', domain: window.location.hostname }).catch(() => {});
+      send({ type: 'CHECK_LIMIT', domain: window.location.hostname });
     };
     chrome.storage.onChanged.addListener(storageListener);
-    return () => chrome.storage.onChanged.removeListener(storageListener);
-  }, []);
-
-  // Send periodic heartbeat when user is actively viewing/focusing the page
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (document.hasFocus() && document.visibilityState === 'visible') {
-        chrome.runtime.sendMessage({ type: 'HEARTBEAT', domain: window.location.hostname }).catch(() => {
-          // Suppress errors during tab shutdown or extension reload
-        });
+    return () => {
+      try {
+        chrome.storage.onChanged.removeListener(storageListener);
+      } catch {
+        // context already invalidated
       }
-    }, 1000);
-    return () => clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -116,7 +145,7 @@ const ContentApp: React.FC = () => {
         >
           <div
             className="dw-notch"
-            onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' }).catch(() => {})}
+            onClick={() => send({ type: 'OPEN_DASHBOARD' })}
             title="Open Digital Wellbeing"
           >
             <span className="dw-notch-icon">
@@ -148,13 +177,13 @@ const ContentApp: React.FC = () => {
             <div className="dw-blocker-footer">
               <button 
                 className="dw-btn-text" 
-                onClick={() => chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD', domain: blockedDomain || window.location.hostname }).catch(() => {})}
+                onClick={() => send({ type: 'OPEN_DASHBOARD', domain: blockedDomain || window.location.hostname })}
               >
                 Settings
               </button>
               <button 
                 className="dw-btn-primary" 
-                onClick={() => chrome.runtime.sendMessage({ type: 'CLOSE_TAB' }).catch(() => {})}
+                onClick={() => send({ type: 'CLOSE_TAB' })}
               >
                 OK
               </button>
@@ -166,7 +195,33 @@ const ContentApp: React.FC = () => {
   );
 };
 
+// Take over from any earlier copy of this script (see INSTANCE above)
+document.getElementById(ROOT_ID)?.remove();
 const root = document.createElement('div');
-root.id = 'digital-wellbeing-content-root';
+root.id = ROOT_ID;
+root.dataset.instance = INSTANCE;
 document.body.appendChild(root);
-ReactDOM.createRoot(root).render(<ContentApp />);
+const reactRoot = ReactDOM.createRoot(root);
+reactRoot.render(<ContentApp />);
+
+const isCurrent = () => root.isConnected && root.dataset.instance === INSTANCE;
+
+// Heartbeat: one tick per second while the page is focused and visible
+const heartbeat = window.setInterval(() => {
+  if (!isCurrent()) {
+    shutdown();
+    return;
+  }
+  if (document.hasFocus() && document.visibilityState === 'visible') {
+    send({ type: 'HEARTBEAT', domain: window.location.hostname });
+  }
+}, 1000);
+
+shutdown = () => {
+  shutdown = () => {};
+  window.clearInterval(heartbeat);
+  setTimeout(() => {
+    reactRoot.unmount();
+    if (isCurrent()) root.remove();
+  }, 0);
+};

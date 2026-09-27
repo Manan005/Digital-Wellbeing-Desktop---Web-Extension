@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output (run `npm run build` to regenerate)
+# Build output (run `npm run build` / `npm run build:firefox` to regenerate)
 dist/
+dist-firefox/
 
 # Chrome extension packaging artifacts
 *.crx

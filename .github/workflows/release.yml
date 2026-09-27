@@ -49,8 +49,18 @@ jobs:
           zip -r -q "$FOLDER.zip" "$FOLDER"
           unzip -l "$FOLDER.zip" | head -20
 
+      # Firefox loads a zip directly (about:debugging → Load Temporary Add-on),
+      # so its manifest.json must sit at the zip root
+      - name: Build and zip the Firefox package
+        run: |
+          node scripts/build-firefox.mjs
+          (cd dist-firefox && zip -r -q ../digital-wellbeing-firefox.zip .)
+          unzip -l digital-wellbeing-firefox.zip | head -10
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
-          files: ${{ env.FOLDER }}.zip
+          files: |
+            ${{ env.FOLDER }}.zip
+            digital-wellbeing-firefox.zip
           fail_on_unmatched_files: true

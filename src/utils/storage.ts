@@ -81,6 +81,9 @@ export const dateStrsBetween = (from: string, to: string): string[] => {
   return dates;
 };
 
+/** An extension page URL in Chrome/Edge/Brave (chrome-extension://) or Firefox (moz-extension://). */
+export const isExtensionUrl = (url: string): boolean => /^(chrome|moz)-extension:\/\//.test(url);
+
 // ─── Key helpers ─────────────────────────────────────────────────────────────
 
 export const sessionKey = (dateStr: string): string => `${SESSION_KEY_PREFIX}${dateStr}`;

@@ -1,6 +1,6 @@
 # Firefox support — plan
 
-**Status:** planned, not implemented. The current build (`dist/`) targets Chrome and other Chromium browsers (Edge, Brave).
+**Status:** implemented in v1.0.1. `npm run build:firefox` writes `dist-firefox/`, and the release workflow attaches `digital-wellbeing-firefox.zip`. Tested in Firefox 156: the add-on installs, time tracking, the 5-minute notch, the dashboard list and the insights chat (on-device model) all work. Differences from the plan: the minimum version is Firefox 142 (needed for `data_collection_permissions`, declared as `none`), and the notch/tracking fix for tabs opened before install also applies to Firefox. Not done yet: signing and listing on addons.mozilla.org, so Firefox users load it as a temporary add-on.
 
 ## Why the current build doesn't load in Firefox
 Loading `dist/manifest.json` through `about:debugging` → *Load Temporary Add-on* fails or misbehaves because the build is Chrome-only:

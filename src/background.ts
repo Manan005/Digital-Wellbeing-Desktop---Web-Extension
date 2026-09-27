@@ -7,6 +7,7 @@
 import type { DomainMetrics, SiteSettings, SessionTuple } from './utils/storage';
 import {
   getLocalDateStr,
+  isExtensionUrl,
   sessionKey,
   appendHeartbeat,
   findExpiredKeys,
@@ -28,7 +29,7 @@ const enqueueWrite = <T>(fn: () => Promise<T>): Promise<T> => {
 // Helper to get domain name stripped of www. and subpages
 const getDomain = (url: string): string | null => {
   try {
-    if (url.startsWith('chrome-extension://')) {
+    if (isExtensionUrl(url)) {
       const parsed = new URL(url);
       if (parsed.pathname.includes('index.html')) {
         if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
@@ -360,3 +361,27 @@ const initialize = async () => {
   lastActiveDomain = activeDomain;
 };
 initialize();
+
+// Browsers only inject manifest content scripts into pages loaded after the
+// extension is installed or reloaded. Inject into tabs that were already open,
+// otherwise they are never tracked and never get alerts until refreshed.
+// The content script replaces any earlier copy of itself, so double injection is safe.
+const injectIntoOpenTabs = async () => {
+  const scripts = chrome.runtime.getManifest().content_scripts ?? [];
+  const tabs = await chrome.tabs.query({ url: ['http://*/*', 'https://*/*'] });
+  for (const tab of tabs) {
+    if (tab.id === undefined || tab.discarded) continue;
+    for (const cs of scripts) {
+      try {
+        if (cs.css?.length) await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: cs.css });
+        if (cs.js?.length) await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: cs.js });
+      } catch {
+        // Pages extensions can't script (Web Store, PDF viewer, error pages)
+      }
+    }
+  }
+};
+
+chrome.runtime.onInstalled.addListener(() => {
+  injectIntoOpenTabs();
+});

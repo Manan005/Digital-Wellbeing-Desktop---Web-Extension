@@ -6,7 +6,7 @@ import { applyTheme, cacheThemeSetting, cachedThemeSetting, usePrefersDark } fro
 import { formatSeconds, getLast7Days } from './utils/time';
 import { getFaviconUrl } from './utils/favicon';
 import type { GlobalSettings, SiteSettings, SessionTuple } from './utils/storage';
-import { sessionKey } from './utils/storage';
+import { sessionKey, isExtensionUrl } from './utils/storage';
 import { datasetFromSnapshot, dailyTotals as computeDailyTotals, sitesOnDate, knownDomains as domainsIn } from './utils/stats';
 import { ChatPanel, ChatLauncher } from './components/chat/ChatPanel';
 
@@ -190,7 +190,7 @@ const MINUTES_LIST = Array.from({ length: 60 }, (_, i) => i);
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 /** The extension's own dashboard page shows up in the usage list under a readable name. */
-const isInternalPage = (domain: string) => domain.startsWith('chrome-extension://');
+const isInternalPage = (domain: string) => isExtensionUrl(domain);
 const displayNameFor = (domain: string) => (isInternalPage(domain) ? 'Digital Wellbeing (this dashboard)' : domain);
 
 /** "1 hr 15 min", "45 min", "2 hr" */

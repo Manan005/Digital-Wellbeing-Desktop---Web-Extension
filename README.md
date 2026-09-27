@@ -64,6 +64,7 @@ The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in
 
 ## ⬇️ Install (no build needed)
 
+### Chrome, Edge, Brave, Opera, Vivaldi
 1. Download **`digital-wellbeing-extension.zip`** from the [latest release](https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension/releases/latest).
 2. Extract it. You get a folder named **`digital-wellbeing-extension`** with `manifest.json` inside.
 3. Open `chrome://extensions` (Edge: `edge://extensions`), turn on **Developer mode**, click **Load unpacked**, and select that `digital-wellbeing-extension` folder.
@@ -71,7 +72,13 @@ The popup, dashboard and chat share one theme. Pick **System / Light / Dark** in
 
 Keep the folder where it is: the browser loads the extension from it. To update, download the new zip, replace the folder, and click the reload icon on the extension's card.
 
-Works in Chrome, Edge, Brave, Opera and other Chromium browsers. **Firefox** isn't supported yet; see [docs/firefox-plan.md](docs/firefox-plan.md).
+### Firefox
+1. Download **`digital-wellbeing-firefox.zip`** from the [latest release](https://github.com/Manan005/Digital-Wellbeing-Desktop---Web-Extension/releases/latest). Don't extract it.
+2. Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select the zip.
+
+Firefox removes temporary add-ons when it restarts, so repeat step 2 after each restart until the add-on is published on addons.mozilla.org. Requires Firefox 142 or newer.
+
+Tabs that were already open when you install or update the extension are picked up automatically; no need to refresh them.
 
 ---
 
@@ -129,7 +136,9 @@ Releases are built by GitHub Actions ([.github/workflows/release.yml](.github/wo
 
 1. Bump `"version"` in `manifest.json` (for example to `1.1.0`) and commit.
 2. Push a matching tag: `git tag v1.1.0 && git push origin v1.1.0`.
-3. The workflow runs the tests, builds, and attaches `digital-wellbeing-extension.zip` to the `v1.1.0` release (creating it if needed). It stops with an error if the tag and the manifest version don't match.
+3. The workflow runs the tests, builds, and attaches `digital-wellbeing-extension.zip` (Chromium browsers) and `digital-wellbeing-firefox.zip` to the `v1.1.0` release (creating it if needed). It stops with an error if the tag and the manifest version don't match.
+
+To build the Firefox package locally, run `npm run build:firefox`; it writes `dist-firefox/` (load its `manifest.json` in `about:debugging`).
 
 To rebuild the zip for an existing tag, open **Actions → Release → Run workflow** and enter the tag.
 
