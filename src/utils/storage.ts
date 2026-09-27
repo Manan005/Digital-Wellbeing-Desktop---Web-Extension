@@ -32,6 +32,17 @@ export interface GlobalSettings {
 
 export type DayData = Record<string, DomainMetrics>;
 
+/** The favicon and origin a site's tab actually had, recorded while browsing. */
+export interface SiteIcon {
+  /** tab.favIconUrl, e.g. https://www.youtube.com/s/desktop/…/favicon.ico */
+  icon?: string;
+  /** e.g. https://www.youtube.com (the tracked domain drops the www.) */
+  origin?: string;
+}
+
+/** Storage key for Record<domain, SiteIcon>. */
+export const SITE_ICONS_KEY = 'siteIcons';
+
 /** Compact visit record: [domain, startEpochSeconds, durationSeconds] */
 export type SessionTuple = [string, number, number];
 

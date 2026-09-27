@@ -4,14 +4,16 @@
  * Groups tracking metrics by local calendar date (YYYY-MM-DD).
  */
 
-import type { DomainMetrics, SiteSettings, SessionTuple } from './utils/storage';
+import type { DomainMetrics, SiteSettings, SessionTuple, SiteIcon } from './utils/storage';
 import {
   getLocalDateStr,
   isExtensionUrl,
   sessionKey,
   appendHeartbeat,
   findExpiredKeys,
+  SITE_ICONS_KEY,
 } from './utils/storage';
+import { isUsableIconUrl } from './utils/favicon';
 
 let activeDomain: string | null = null;
 let lastActiveDomain: string | null = null;
@@ -93,6 +95,29 @@ const incrementTimesOpened = (domain: string) => enqueueWrite(async () => {
 
   await chrome.storage.local.set({ [dateKey]: dayData });
 });
+
+// Remember each site's real favicon and origin (e.g. https://www.youtube.com) so
+// the dashboard can show the right icon. Written only when it changes.
+let knownIcons: Record<string, SiteIcon> | null = null;
+const rememberSiteIcon = async (domain: string, tab?: chrome.tabs.Tab) => {
+  if (!tab?.url || isExtensionUrl(tab.url)) return;
+  let origin: string;
+  try {
+    origin = new URL(tab.url).origin;
+  } catch {
+    return;
+  }
+  const icon = isUsableIconUrl(tab.favIconUrl) ? tab.favIconUrl : undefined;
+  if (!knownIcons) {
+    knownIcons = ((await chrome.storage.local.get(SITE_ICONS_KEY))[SITE_ICONS_KEY] as Record<string, SiteIcon>) || {};
+  }
+  const prev = knownIcons[domain];
+  // Keep a previously seen icon while a page is still loading its own
+  if (prev && prev.origin === origin && (prev.icon === icon || !icon)) return;
+  knownIcons[domain] = { origin, icon: icon ?? prev?.icon };
+  const snapshot = { ...knownIcons };
+  await enqueueWrite(() => chrome.storage.local.set({ [SITE_ICONS_KEY]: snapshot }));
+};
 
 // The tab showing `domain`: the heartbeat's own tab when known, otherwise the
 // active tab of the last focused window (a service worker has no "current" window).
@@ -262,6 +287,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         checkAndEnforceLimit(sender.tab.id, domain);
       }
       incrementTimeSpent(domain, sender.tab?.id);
+      rememberSiteIcon(domain, sender.tab);
     }
   }
 });

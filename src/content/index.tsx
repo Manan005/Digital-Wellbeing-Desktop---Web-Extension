@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import './content.css';
-import { getFaviconUrl } from '../utils/favicon';
+import { SiteIcon } from '../components/SiteIcon';
+import type { SiteIcon as SiteIconInfo } from '../utils/storage';
 import { getLocalDateStr } from '../utils/storage';
 
 const NOTCH_VISIBLE_MS = 4000;
@@ -36,6 +37,15 @@ const send = (message: Record<string, unknown>): void => {
   } catch {
     shutdown();
   }
+};
+
+/**
+ * This page's own favicon. The notch lives inside the page, whose CSP usually
+ * allows same-origin images but not chrome-extension:// or Google URLs.
+ */
+const pageIcon = (): SiteIconInfo => {
+  const link = document.querySelector<HTMLLinkElement>('link[rel~="icon"], link[rel="apple-touch-icon"]');
+  return { icon: link?.href || `${location.origin}/favicon.ico`, origin: location.origin };
 };
 
 /** "15m", "1h", "1h 5m" — the way Android's Digital Wellbeing words it. */
@@ -149,13 +159,7 @@ const ContentApp: React.FC = () => {
             title="Open Digital Wellbeing"
           >
             <span className="dw-notch-icon">
-              <img
-                src={getFaviconUrl(notchDomain)}
-                alt=""
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${notchDomain}&sz=64`;
-                }}
-              />
+              <SiteIcon domain={notchDomain} known={pageIcon()} />
             </span>
             <span className="dw-notch-text">Used for {formatUsed(notchMinutes)}</span>
           </div>

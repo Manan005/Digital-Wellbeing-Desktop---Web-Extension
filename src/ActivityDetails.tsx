@@ -4,9 +4,9 @@ import clsx from 'clsx';
 import { DEFAULT_THEME, isThemeSetting, resolveTheme, toggledSetting, type ThemeSetting } from './utils/theme';
 import { applyTheme, cacheThemeSetting, cachedThemeSetting, usePrefersDark } from './utils/themeDom';
 import { formatSeconds, getLast7Days } from './utils/time';
-import { getFaviconUrl } from './utils/favicon';
-import type { GlobalSettings, SiteSettings, SessionTuple } from './utils/storage';
-import { sessionKey, isExtensionUrl } from './utils/storage';
+import { SiteIcon } from './components/SiteIcon';
+import type { GlobalSettings, SiteSettings, SessionTuple, SiteIcon as SiteIconInfo } from './utils/storage';
+import { sessionKey, isExtensionUrl, SITE_ICONS_KEY } from './utils/storage';
 import { datasetFromSnapshot, dailyTotals as computeDailyTotals, sitesOnDate, knownDomains as domainsIn } from './utils/stats';
 import { ChatPanel, ChatLauncher } from './components/chat/ChatPanel';
 
@@ -673,6 +673,9 @@ const ActivityDetails: React.FC = () => {
   // Every domain ever seen, so the chat can resolve site names like "youtube"
   const chatDomains = useMemo(() => domainsIn(datasetFromSnapshot('all', allStorage)), [allStorage]);
 
+  // Real favicons recorded by the background while browsing (see utils/favicon.ts)
+  const siteIcons: Record<string, SiteIconInfo> = allStorage[SITE_ICONS_KEY] || {};
+
   // Open the full extension page dashboard
   const openDashboard = () => {
     chrome.runtime.sendMessage({ type: 'OPEN_DASHBOARD' });
@@ -726,14 +729,7 @@ const ActivityDetails: React.FC = () => {
               {todaySites.map(([domain, metrics]) => (
                 <div key={domain} className="flex items-center justify-between bg-card border border-line p-3 rounded-xl hover:border-line-strong transition-all shadow-sm">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <img
-                      src={getFaviconUrl(domain)}
-                      className="w-5 h-5 rounded flex-shrink-0 bg-tile"
-                      alt={domain}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                      }}
-                    />
+                    <SiteIcon domain={domain} known={siteIcons[domain]} className="w-5 h-5 rounded flex-shrink-0 bg-tile" />
                     <span className="font-medium truncate text-sm text-ink-2" title={domain}>{displayNameFor(domain)}</span>
                   </div>
                   <span className="text-accent font-semibold text-xs ml-2 flex-shrink-0">
@@ -883,14 +879,7 @@ const ActivityDetails: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-tile rounded-2xl flex items-center justify-center border border-line">
-                      <img
-                        src={getFaviconUrl(domain)}
-                        className="w-8 h-8 rounded-md"
-                        alt={domain}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                        }}
-                      />
+                      <SiteIcon domain={domain} known={siteIcons[domain]} className="w-8 h-8 rounded-md" />
                     </div>
                     <div>
                       <div className="font-bold text-ink text-base" title={domain}>{displayNameFor(domain)}</div>
